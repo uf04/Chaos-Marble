@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>카오스 마블 (Chaos Marble)</title>
-    <!-- 갓필드와 유사한 둥글고 귀여운 느낌의 폰트 적용 (구글 폰트 Jua) -->
     <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
     <style>
         * {
@@ -17,13 +16,12 @@
             width: 100%;
             height: 100%;
             font-family: 'Jua', sans-serif;
-            /* 방사형 그라데이션 배경 */
             background: radial-gradient(circle at center, #f2ffc2 0%, #a8e063 100%);
             overflow: hidden;
             color: #333;
         }
 
-        /* 1. 상단 네비게이션 바 (GNB) */
+        /* 상단 네비게이션 바 (GNB) */
         header {
             width: 100%;
             background-color: rgba(255, 255, 255, 0.4);
@@ -56,13 +54,13 @@
             color: #27ae60;
         }
 
-        /* 2. 메인 컨텐츠 영역 */
+        /* 메인 컨텐츠 영역 */
         main {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            padding-top: 60px; /* 네비게이션 바 높이만큼 여백 */
+            padding-top: 60px; 
         }
 
         .page-container {
@@ -102,7 +100,7 @@
                  6px  6px 0px rgba(0,0,0,0.3);
         }
 
-        /* 입력 폼 디자인 */
+        /* 입력 폼 및 공통 버튼 디자인 */
         .nickname-input {
             width: 320px;
             height: 60px;
@@ -118,15 +116,9 @@
             transition: border-color 0.3s;
         }
 
-        .nickname-input:focus {
-            border-color: #2ecc71;
-        }
+        .nickname-input:focus { border-color: #2ecc71; }
+        .nickname-input::placeholder { color: #bdc3c7; }
 
-        .nickname-input::placeholder {
-            color: #bdc3c7;
-        }
-
-        /* 공통 버튼 디자인 */
         .action-btn {
             width: 320px;
             height: 70px;
@@ -146,28 +138,74 @@
             box-shadow: none !important;
         }
 
-        /* 초록색 버튼 (입장하기) */
-        .btn-enter {
-            background-color: #2ecc71;
-            box-shadow: 0 6px 0 #27ae60, 0 10px 15px rgba(0,0,0,0.2);
-            text-shadow: 2px 2px 0px #27ae60;
+        .btn-enter { background-color: #2ecc71; box-shadow: 0 6px 0 #27ae60, 0 10px 15px rgba(0,0,0,0.2); text-shadow: 2px 2px 0px #27ae60; }
+        .btn-create { background-color: #e74c3c; box-shadow: 0 6px 0 #c0392b, 0 10px 15px rgba(0,0,0,0.2); text-shadow: 2px 2px 0px #c0392b; }
+        .btn-join { background-color: #1abc9c; box-shadow: 0 6px 0 #16a085, 0 10px 15px rgba(0,0,0,0.2); text-shadow: 2px 2px 0px #16a085; }
+
+        /* 모달(팝업) UI 스타일 */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            animation: fadeIn 0.2s ease-out;
         }
 
-        /* 주황색 버튼 (방 만들기) */
-        .btn-create {
-            background-color: #e74c3c;
-            box-shadow: 0 6px 0 #c0392b, 0 10px 15px rgba(0,0,0,0.2);
-            text-shadow: 2px 2px 0px #c0392b;
+        .modal-content {
+            background-color: #fffaf0;
+            border: 6px solid #f39c12;
+            border-radius: 30px;
+            width: 600px;
+            max-width: 90%;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            position: relative;
         }
 
-        /* 청록색 버튼 (방 참여하기) */
-        .btn-join {
-            background-color: #1abc9c;
-            box-shadow: 0 6px 0 #16a085, 0 10px 15px rgba(0,0,0,0.2);
-            text-shadow: 2px 2px 0px #16a085;
+        .modal-title {
+            font-size: 48px;
+            color: #c0392b;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 0px rgba(0,0,0,0.1);
         }
 
-        /* 애니메이션 */
+        .modal-body {
+            font-size: 22px;
+            color: #2c3e50;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            text-align: left;
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px dashed #f39c12;
+        }
+
+        .modal-body p { margin-bottom: 15px; }
+        .modal-body h3 { color: #d35400; font-size: 26px; margin-bottom: 5px; }
+        .modal-body hr { border: 1px dashed #ecf0f1; margin: 15px 0; }
+
+        .modal-close-btn {
+            background-color: #f39c12;
+            color: white;
+            border: none;
+            padding: 10px 40px;
+            font-size: 24px;
+            font-family: 'Jua', sans-serif;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #d35400;
+        }
+
+        .modal-close-btn:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -180,9 +218,9 @@
     <header>
         <nav>
             <button onclick="goHome()">홈</button>
-            <button onclick="handleMenuClick('게임 소개')">게임 소개</button>
-            <button onclick="handleMenuClick('플레이 방법')">플레이 방법</button>
-            <button onclick="handleMenuClick('설정')">설정</button>
+            <button onclick="openModal('introModal')">게임 소개</button>
+            <button onclick="openModal('howToModal')">플레이 방법</button>
+            <button onclick="openModal('settingModal')">설정</button>
         </nav>
     </header>
 
@@ -202,26 +240,71 @@
         </div>
     </main>
 
+    <!-- [모달] 게임 소개 -->
+    <div id="introModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2 class="modal-title">카오스 마블이란?</h2>
+            <div class="modal-body" style="text-align: center;">
+                <p style="font-size: 26px; font-weight: bold; color: #e74c3c;">"도파민 폭발! 극강의 난장판 파티게임!"</p>
+                <p>친숙한 클래식 부루마블 규칙 위에<br>예측 불가능한 <strong>'억까'</strong>와 사기적인 <strong>'증강'</strong> 시스템,<br>판을 뒤엎는 <strong>'카오스 룰렛'</strong> 요소를 결합한<br>단시간 쾌속 대전 게임입니다.</p>
+            </div>
+            <button class="modal-close-btn" onclick="closeModal('introModal')">닫기</button>
+        </div>
+    </div>
+
+    <!-- [모달] 플레이 방법 -->
+    <div id="howToModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2 class="modal-title">플레이 방법</h2>
+            <div class="modal-body">
+                <h3>🎲 익숙한 코어 룰</h3>
+                <p>주사위를 굴려 9x9 보드판을 이동하고 땅을 차지하세요. 남의 땅을 밟으면 파산할 수 있습니다!</p>
+                <hr>
+                <h3>🃏 증강 카드 시스템</h3>
+                <p>실버, 골드, 프리즘 타일에 도착해 강력한 카드를 수집하세요. 통행료 3배 폭탄이나 메테오로 선두를 파괴할 수 있습니다.</p>
+                <hr>
+                <h3>🎡 카오스 룰렛</h3>
+                <p>중앙 룰렛이 돌면 전역 패시브가 발동됩니다. 모든 통행료가 2배로 폭등하는 '억까'를 조심하세요!</p>
+            </div>
+            <button class="modal-close-btn" onclick="closeModal('howToModal')">닫기</button>
+        </div>
+    </div>
+
+    <!-- [모달] 설정 -->
+    <div id="settingModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2 class="modal-title">설정</h2>
+            <div class="modal-body" style="text-align: center;">
+                <p>사운드 및 해상도 설정이 추가될 예정입니다.</p>
+            </div>
+            <button class="modal-close-btn" onclick="closeModal('settingModal')">닫기</button>
+        </div>
+    </div>
+
     <script>
-        // 홈 버튼 클릭 시 첫 번째 랜딩 페이지로 이동
+        // 홈 버튼 동작
         function goHome() {
             document.getElementById('page-2').classList.add('hidden');
             document.getElementById('page-1').classList.remove('hidden');
         }
 
-        // 기타 메뉴 클릭 시 동작 (SPA 라우팅이나 모달 창 호출부로 활용)
-        function handleMenuClick(menuName) {
-            alert(`${menuName} 페이지로 이동합니다.`);
+        // 모달 열기/닫기 제어
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
         }
 
-        // 엔터 키 입력 시 바로 입장 처리
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        // 닉네임 입력 후 엔터 처리
         function handleEnterKey(event) {
             if (event.key === 'Enter') {
                 enterGame();
             }
         }
 
-        // 닉네임 검증 및 두 번째 페이지로 전환
+        // 페이지 1 -> 2 전환
         function enterGame() {
             const nicknameInput = document.getElementById('nickname');
             const nickname = nicknameInput.value.trim();
@@ -232,29 +315,22 @@
                 return;
             }
 
-            // 추후 세션 스토리지나 전역 상태 관리(Redux 등)에 저장할 데이터
             sessionStorage.setItem('chaosMarbleNickname', nickname);
-
-            // 페이지 전환 애니메이션 적용을 위해 DOM 제어
             document.getElementById('page-1').classList.add('hidden');
             document.getElementById('page-2').classList.remove('hidden');
         }
 
-        // 방 만들기 로직 연결부
         function createRoom() {
             const nickname = sessionStorage.getItem('chaosMarbleNickname');
             alert(`[서버 통신] ${nickname}님이 새로운 방을 생성합니다!`);
-            // 여기에 Node.js + Socket.io 방 생성 이벤트 방출 (socket.emit('createRoom'))
         }
 
-        // 방 참여하기 로직 연결부
         function joinRoom() {
             const nickname = sessionStorage.getItem('chaosMarbleNickname');
             const roomCode = prompt("참여할 방 코드를 입력하세요:");
             
             if(roomCode) {
                 alert(`[서버 통신] ${nickname}님이 [${roomCode}] 방에 입장 시도합니다!`);
-                // 여기에 Node.js + Socket.io 방 참가 이벤트 방출 (socket.emit('joinRoom', roomCode))
             }
         }
     </script>
