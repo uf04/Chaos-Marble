@@ -1,1 +1,254 @@
-랜딩페이지
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>카오스 마블 (Chaos Marble)</title>
+    <!-- 갓필드와 유사한 둥글고 귀여운 느낌의 폰트 적용 (구글 폰트 Jua) -->
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            font-family: 'Jua', sans-serif;
+            /* 갓필드 느낌의 소용돌이 형태를 대체할 방사형 그라데이션 배경 */
+            background: radial-gradient(circle at center, #f2ffc2 0%, #a8e063 100%);
+            overflow: hidden;
+            color: #333;
+        }
+
+        /* 1. 상단 네비게이션 바 (GNB) */
+        header {
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 60px;
+            gap: 60px;
+        }
+
+        nav button {
+            background: none;
+            border: none;
+            font-family: 'Jua', sans-serif;
+            font-size: 22px;
+            color: #2c3e50;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        nav button:hover {
+            color: #27ae60;
+        }
+
+        /* 2. 메인 컨텐츠 영역 */
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding-top: 60px; /* 네비게이션 바 높이만큼 여백 */
+        }
+
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* 게임 로고 텍스트 아트 */
+        .game-logo {
+            font-size: 110px;
+            color: #f39c12;
+            text-shadow: 
+                -3px -3px 0 #c0392b,  
+                 3px -3px 0 #c0392b,
+                -3px  3px 0 #c0392b,
+                 3px  3px 0 #c0392b,
+                 6px  6px 0px rgba(0,0,0,0.3);
+            margin-bottom: 50px;
+            letter-spacing: 2px;
+        }
+
+        .game-logo span {
+            color: #2ecc71;
+            text-shadow: 
+                -3px -3px 0 #27ae60,  
+                 3px -3px 0 #27ae60,
+                -3px  3px 0 #27ae60,
+                 3px  3px 0 #27ae60,
+                 6px  6px 0px rgba(0,0,0,0.3);
+        }
+
+        /* 입력 폼 디자인 */
+        .nickname-input {
+            width: 320px;
+            height: 60px;
+            font-size: 24px;
+            font-family: 'Jua', sans-serif;
+            text-align: center;
+            border: 4px solid #fff;
+            border-radius: 30px;
+            background-color: #fdfdfd;
+            margin-bottom: 25px;
+            outline: none;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.1);
+            transition: border-color 0.3s;
+        }
+
+        .nickname-input:focus {
+            border-color: #2ecc71;
+        }
+
+        .nickname-input::placeholder {
+            color: #bdc3c7;
+        }
+
+        /* 공통 버튼 디자인 */
+        .action-btn {
+            width: 320px;
+            height: 70px;
+            font-size: 32px;
+            font-family: 'Jua', sans-serif;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            position: relative;
+            margin-bottom: 20px;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .action-btn:active {
+            transform: translateY(6px);
+            box-shadow: none !important;
+        }
+
+        /* 초록색 버튼 (입장하기) */
+        .btn-enter {
+            background-color: #2ecc71;
+            box-shadow: 0 6px 0 #27ae60, 0 10px 15px rgba(0,0,0,0.2);
+            text-shadow: 2px 2px 0px #27ae60;
+        }
+
+        /* 주황색 버튼 (방 만들기) */
+        .btn-create {
+            background-color: #e74c3c;
+            box-shadow: 0 6px 0 #c0392b, 0 10px 15px rgba(0,0,0,0.2);
+            text-shadow: 2px 2px 0px #c0392b;
+        }
+
+        /* 청록색 버튼 (방 참여하기) */
+        .btn-join {
+            background-color: #1abc9c;
+            box-shadow: 0 6px 0 #16a085, 0 10px 15px rgba(0,0,0,0.2);
+            text-shadow: 2px 2px 0px #16a085;
+        }
+
+        /* 애니메이션 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 최상단 네비게이션 메뉴 바 -->
+    <header>
+        <nav>
+            <button onclick="handleMenuClick('게임 소개')">게임 소개</button>
+            <button onclick="handleMenuClick('플레이 방법')">플레이 방법</button>
+            <button onclick="handleMenuClick('설정')">설정</button>
+        </nav>
+    </header>
+
+    <main>
+        <!-- [페이지 1] 닉네임 설정 및 입장 화면 -->
+        <div id="page-1" class="page-container">
+            <h1 class="game-logo">카오스 <span>마블</span></h1>
+            <input type="text" id="nickname" class="nickname-input" placeholder="예언자의 이름" maxlength="10" onkeypress="handleEnterKey(event)">
+            <button class="action-btn btn-enter" onclick="enterGame()">입장하기</button>
+        </div>
+
+        <!-- [페이지 2] 방 만들기 / 참여하기 화면 -->
+        <div id="page-2" class="page-container hidden">
+            <h1 class="game-logo" style="font-size: 80px; margin-bottom: 40px;">카오스 <span>마블</span></h1>
+            <button class="action-btn btn-create" onclick="createRoom()">방 만들기</button>
+            <button class="action-btn btn-join" onclick="joinRoom()">방 참여하기</button>
+        </div>
+    </main>
+
+    <script>
+        // 메뉴 클릭 시 동작 (SPA 라우팅이나 모달 창 호출부로 활용)
+        function handleMenuClick(menuName) {
+            // 추후 실제 페이지 전환 로직이나 모달 창 띄우기 로직으로 교체
+            alert(`${menuName} 페이지로 이동합니다.`);
+        }
+
+        // 엔터 키 입력 시 바로 입장 처리
+        function handleEnterKey(event) {
+            if (event.key === 'Enter') {
+                enterGame();
+            }
+        }
+
+        // 닉네임 검증 및 두 번째 페이지로 전환
+        function enterGame() {
+            const nicknameInput = document.getElementById('nickname');
+            const nickname = nicknameInput.value.trim();
+
+            if (nickname === '') {
+                alert('닉네임을 입력해주세요!');
+                nicknameInput.focus();
+                return;
+            }
+
+            // 추후 세션 스토리지나 전역 상태 관리(Redux 등)에 저장할 데이터
+            sessionStorage.setItem('chaosMarbleNickname', nickname);
+
+            // 페이지 전환 애니메이션 적용을 위해 DOM 제어
+            document.getElementById('page-1').classList.add('hidden');
+            document.getElementById('page-2').classList.remove('hidden');
+        }
+
+        // 방 만들기 로직 연결부
+        function createRoom() {
+            const nickname = sessionStorage.getItem('chaosMarbleNickname');
+            alert(`[서버 통신] ${nickname}님이 새로운 방을 생성합니다!`);
+            // 여기에 Node.js + Socket.io 방 생성 이벤트 방출 (socket.emit('createRoom'))
+        }
+
+        // 방 참여하기 로직 연결부
+        function joinRoom() {
+            const nickname = sessionStorage.getItem('chaosMarbleNickname');
+            const roomCode = prompt("참여할 방 코드를 입력하세요:");
+            
+            if(roomCode) {
+                alert(`[서버 통신] ${nickname}님이 [${roomCode}] 방에 입장 시도합니다!`);
+                // 여기에 Node.js + Socket.io 방 참가 이벤트 방출 (socket.emit('joinRoom', roomCode))
+            }
+        }
+    </script>
+</body>
+</html>
