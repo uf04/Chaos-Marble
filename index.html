@@ -30,13 +30,14 @@
             top: 0;
             left: 0;
             z-index: 10;
+            height: 60px;
         }
 
         nav {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 60px;
+            height: 100%;
             gap: 60px;
         }
 
@@ -60,7 +61,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            padding-top: 60px; 
+            padding-top: 60px; /* 네비게이션 바 높이만큼 여백을 두어 침범 방지 */
             width: 100%;
         }
 
@@ -115,22 +116,9 @@
             text-align: left;
         }
 
-        .how-to-content h3 {
-            color: #d35400;
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-
-        .how-to-content p {
-            font-size: 22px;
-            color: #2c3e50;
-            line-height: 1.6;
-            margin-bottom: 25px;
-        }
-
-        .how-to-content p:last-child {
-            margin-bottom: 0;
-        }
+        .how-to-content h3 { color: #d35400; font-size: 28px; margin-bottom: 10px; }
+        .how-to-content p { font-size: 22px; color: #2c3e50; line-height: 1.6; margin-bottom: 25px; }
+        .how-to-content p:last-child { margin-bottom: 0; }
 
         /* 입력 폼 및 공통 버튼 디자인 */
         .nickname-input {
@@ -165,14 +153,72 @@
             transition: transform 0.1s, box-shadow 0.1s;
         }
 
-        .action-btn:active {
-            transform: translateY(6px);
-            box-shadow: none !important;
-        }
+        .action-btn:active { transform: translateY(6px); box-shadow: none !important; }
 
         .btn-enter { background-color: #2ecc71; box-shadow: 0 6px 0 #27ae60, 0 10px 15px rgba(0,0,0,0.2); text-shadow: 2px 2px 0px #27ae60; }
         .btn-create { background-color: #e74c3c; box-shadow: 0 6px 0 #c0392b, 0 10px 15px rgba(0,0,0,0.2); text-shadow: 2px 2px 0px #c0392b; }
         .btn-join { background-color: #1abc9c; box-shadow: 0 6px 0 #16a085, 0 10px 15px rgba(0,0,0,0.2); text-shadow: 2px 2px 0px #16a085; }
+        .btn-start { background-color: #2ecc71; box-shadow: 0 6px 0 #27ae60, 0 10px 15px rgba(0,0,0,0.2); text-shadow: 2px 2px 0px #27ae60; margin-top: 20px; }
+
+        /* [대기실(Lobby) 전용 디자인] */
+        .room-code-badge {
+            background-color: #fffaf0;
+            border: 4px solid #e74c3c;
+            border-radius: 25px;
+            padding: 15px 40px;
+            font-size: 40px;
+            color: #c0392b;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+        }
+
+        .player-slots {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .player-slot {
+            width: 180px;
+            height: 230px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border: 5px solid #f39c12;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.05), 0 5px 10px rgba(0,0,0,0.05);
+        }
+
+        .player-avatar {
+            width: 100px;
+            height: 100px;
+            background-color: #bdc3c7;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2);
+        }
+
+        .player-name-box {
+            background-color: #fff;
+            border: 2px solid #ecf0f1;
+            border-radius: 12px;
+            padding: 8px 10px;
+            width: 85%;
+            font-size: 20px;
+            color: #7f8c8d;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
         /* 모달(팝업) UI 스타일 */
         .modal-overlay {
@@ -198,40 +244,10 @@
             position: relative;
         }
 
-        .modal-title {
-            font-size: 48px;
-            color: #c0392b;
-            margin-bottom: 20px;
-            text-shadow: 1px 1px 0px rgba(0,0,0,0.1);
-        }
-
-        .modal-body {
-            font-size: 22px;
-            color: #2c3e50;
-            line-height: 1.6;
-            margin-bottom: 30px;
-            background: #fff;
-            padding: 20px;
-            border-radius: 15px;
-            border: 2px dashed #f39c12;
-        }
-
-        .modal-close-btn {
-            background-color: #f39c12;
-            color: white;
-            border: none;
-            padding: 10px 40px;
-            font-size: 24px;
-            font-family: 'Jua', sans-serif;
-            border-radius: 15px;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #d35400;
-        }
-
-        .modal-close-btn:active {
-            transform: translateY(4px);
-            box-shadow: none;
-        }
+        .modal-title { font-size: 48px; color: #c0392b; margin-bottom: 20px; text-shadow: 1px 1px 0px rgba(0,0,0,0.1); }
+        .modal-body { font-size: 22px; color: #2c3e50; line-height: 1.6; margin-bottom: 30px; background: #fff; padding: 20px; border-radius: 15px; border: 2px dashed #f39c12; }
+        .modal-close-btn { background-color: #f39c12; color: white; border: none; padding: 10px 40px; font-size: 24px; font-family: 'Jua', sans-serif; border-radius: 15px; cursor: pointer; box-shadow: 0 4px 0 #d35400; }
+        .modal-close-btn:active { transform: translateY(4px); box-shadow: none; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-20px); }
@@ -280,6 +296,39 @@
                 <p>중앙 룰렛이 돌면 게임 전체에 전역 패시브가 발동됩니다. 모든 통행료가 2배로 폭등하는 치명적인 변수를 마주하세요!</p>
             </div>
         </div>
+
+        <!-- [페이지 4] 게임 대기실 (Lobby) 화면 -->
+        <div id="page-lobby" class="page-container hidden">
+            <!-- 방 코드 표시 영역 -->
+            <div class="room-code-badge" id="display-room-code">ROOM CODE: </div>
+            
+            <!-- 플레이어 슬롯 4개 -->
+            <div class="player-slots">
+                <!-- 슬롯 1 (본인) -->
+                <div class="player-slot" id="slot-1">
+                    <div class="player-avatar" id="slot-1-avatar">P1</div>
+                    <div class="player-name-box" id="slot-1-name" style="color: #2c3e50; border-color: #2ecc71;">Empty Slot</div>
+                </div>
+                <!-- 슬롯 2 -->
+                <div class="player-slot">
+                    <div class="player-avatar">대기중</div>
+                    <div class="player-name-box">Empty Slot</div>
+                </div>
+                <!-- 슬롯 3 -->
+                <div class="player-slot">
+                    <div class="player-avatar">대기중</div>
+                    <div class="player-name-box">Empty Slot</div>
+                </div>
+                <!-- 슬롯 4 -->
+                <div class="player-slot">
+                    <div class="player-avatar">대기중</div>
+                    <div class="player-name-box">Empty Slot</div>
+                </div>
+            </div>
+
+            <!-- 게임 시작 버튼 -->
+            <button class="action-btn btn-start" onclick="startGame()">게임 시작</button>
+        </div>
     </main>
 
     <!-- [모달] 게임 소개 -->
@@ -306,59 +355,69 @@
     </div>
 
     <script>
-        // 페이지 전환을 통합적으로 관리하는 함수
+        // 페이지 전환 함수
         function showPage(targetPageId) {
-            // 1. 모든 페이지 숨기기
             const pages = document.querySelectorAll('.page-container');
             pages.forEach(page => page.classList.add('hidden'));
-
-            // 2. 요청받은 페이지만 보이기
             document.getElementById(targetPageId).classList.remove('hidden');
         }
 
         // 모달 열기/닫기 제어
-        function openModal(modalId) {
-            document.getElementById(modalId).classList.remove('hidden');
-        }
+        function openModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
+        function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
-        }
-
-        // 닉네임 입력 후 엔터 처리
+        // 닉네임 엔터 처리
         function handleEnterKey(event) {
-            if (event.key === 'Enter') {
-                enterGame();
-            }
+            if (event.key === 'Enter') enterGame();
         }
 
-        // 닉네임 입력 후 대기실(방 만들기) 화면으로 전환
+        // 닉네임 입력 및 저장
         function enterGame() {
             const nicknameInput = document.getElementById('nickname');
             const nickname = nicknameInput.value.trim();
-
             if (nickname === '') {
                 alert('닉네임을 입력해주세요!');
                 nicknameInput.focus();
                 return;
             }
-
             sessionStorage.setItem('chaosMarbleNickname', nickname);
-            showPage('page-2'); // showPage 함수를 재사용하여 화면 전환
+            showPage('page-2'); 
         }
 
+        // 방 만들기 -> 대기실로 이동
         function createRoom() {
             const nickname = sessionStorage.getItem('chaosMarbleNickname');
-            alert(`[서버 통신] ${nickname}님이 새로운 방을 생성합니다!`);
+            
+            // 랜덤한 5자리 영문/숫자 방 코드 생성
+            const roomCode = Math.random().toString(36).substring(2, 7).toUpperCase();
+            
+            // 대기실 UI 업데이트
+            document.getElementById('display-room-code').innerText = `ROOM CODE: ${roomCode}`;
+            document.getElementById('slot-1-name').innerText = nickname;
+            document.getElementById('slot-1-avatar').style.backgroundColor = '#2ecc71'; // 방장 색상 변경
+            
+            showPage('page-lobby');
         }
 
+        // 방 참여하기 -> 대기실로 이동
         function joinRoom() {
             const nickname = sessionStorage.getItem('chaosMarbleNickname');
             const roomCode = prompt("참여할 방 코드를 입력하세요:");
             
             if(roomCode) {
-                alert(`[서버 통신] ${nickname}님이 [${roomCode}] 방에 입장 시도합니다!`);
+                // 대기실 UI 업데이트
+                document.getElementById('display-room-code').innerText = `ROOM CODE: ${roomCode.toUpperCase()}`;
+                document.getElementById('slot-1-name').innerText = nickname;
+                document.getElementById('slot-1-avatar').style.backgroundColor = '#3498db'; // 참가자 색상 변경
+                
+                showPage('page-lobby');
             }
+        }
+
+        // 게임 시작 버튼 클릭 이벤트
+        function startGame() {
+            alert("서버 연결 전입니다! 추후 Phaser 3 게임 보드판 화면으로 넘어갑니다.");
+            // 추후 socket.emit('startGame') 로직 추가 예정
         }
     </script>
 </body>
