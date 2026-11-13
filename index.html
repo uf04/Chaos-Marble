@@ -61,14 +61,17 @@
             align-items: center;
             height: 100vh;
             padding-top: 60px; 
+            width: 100%;
         }
 
         .page-container {
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             animation: fadeIn 0.4s ease-out;
             width: 100%;
+            height: 100%;
         }
 
         .hidden {
@@ -98,6 +101,35 @@
                 -3px  3px 0 #27ae60,
                  3px  3px 0 #27ae60,
                  6px  6px 0px rgba(0,0,0,0.3);
+        }
+
+        /* 플레이 방법 페이지 전용 컨텐츠 박스 */
+        .how-to-content {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 40px;
+            border-radius: 25px;
+            border: 4px solid #fff;
+            max-width: 800px;
+            width: 90%;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            text-align: left;
+        }
+
+        .how-to-content h3 {
+            color: #d35400;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .how-to-content p {
+            font-size: 22px;
+            color: #2c3e50;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .how-to-content p:last-child {
+            margin-bottom: 0;
         }
 
         /* 입력 폼 및 공통 버튼 디자인 */
@@ -178,16 +210,11 @@
             color: #2c3e50;
             line-height: 1.6;
             margin-bottom: 30px;
-            text-align: left;
             background: #fff;
             padding: 20px;
             border-radius: 15px;
             border: 2px dashed #f39c12;
         }
-
-        .modal-body p { margin-bottom: 15px; }
-        .modal-body h3 { color: #d35400; font-size: 26px; margin-bottom: 5px; }
-        .modal-body hr { border: 1px dashed #ecf0f1; margin: 15px 0; }
 
         .modal-close-btn {
             background-color: #f39c12;
@@ -217,15 +244,15 @@
     <!-- 최상단 네비게이션 메뉴 바 -->
     <header>
         <nav>
-            <button onclick="goHome()">홈</button>
+            <button onclick="showPage('page-1')">홈</button>
             <button onclick="openModal('introModal')">게임 소개</button>
-            <button onclick="openModal('howToModal')">플레이 방법</button>
+            <button onclick="showPage('page-how-to')">플레이 방법</button>
             <button onclick="openModal('settingModal')">설정</button>
         </nav>
     </header>
 
     <main>
-        <!-- [페이지 1] 닉네임 설정 및 입장 화면 -->
+        <!-- [페이지 1] 닉네임 설정 및 입장 화면 (홈) -->
         <div id="page-1" class="page-container">
             <h1 class="game-logo">카오스 <span>마블</span></h1>
             <input type="text" id="nickname" class="nickname-input" placeholder="예언자의 이름" maxlength="10" onkeypress="handleEnterKey(event)">
@@ -238,6 +265,21 @@
             <button class="action-btn btn-create" onclick="createRoom()">방 만들기</button>
             <button class="action-btn btn-join" onclick="joinRoom()">방 참여하기</button>
         </div>
+
+        <!-- [페이지 3] 플레이 방법 화면 -->
+        <div id="page-how-to" class="page-container hidden">
+            <h1 class="game-logo" style="font-size: 70px; margin-bottom: 30px;">플레이 <span>방법</span></h1>
+            <div class="how-to-content">
+                <h3>🎲 익숙한 코어 룰</h3>
+                <p>주사위를 굴려 9x9 보드판을 이동하고 땅을 차지하세요. 남의 땅을 밟으면 통행료를 지불하여 파산할 수 있습니다!</p>
+                
+                <h3>🃏 증강 카드 시스템</h3>
+                <p>실버, 골드, 프리즘 타일에 도착해 강력한 카드를 수집하세요. 통행료 3배 폭탄이나 메테오로 선두를 순식간에 파괴할 수 있습니다.</p>
+                
+                <h3>🎡 카오스 룰렛</h3>
+                <p>중앙 룰렛이 돌면 게임 전체에 전역 패시브가 발동됩니다. 모든 통행료가 2배로 폭등하는 치명적인 변수를 마주하세요!</p>
+            </div>
+        </div>
     </main>
 
     <!-- [모달] 게임 소개 -->
@@ -245,28 +287,10 @@
         <div class="modal-content">
             <h2 class="modal-title">카오스 마블이란?</h2>
             <div class="modal-body" style="text-align: center;">
-                <p style="font-size: 26px; font-weight: bold; color: #e74c3c;">"도파민 폭발! 극강의 난장판 파티게임!"</p>
+                <p style="font-size: 26px; font-weight: bold; color: #e74c3c; margin-bottom: 15px;">"도파민 폭발! 극강의 난장판 파티게임!"</p>
                 <p>친숙한 클래식 부루마블 규칙 위에<br>예측 불가능한 <strong>'억까'</strong>와 사기적인 <strong>'증강'</strong> 시스템,<br>판을 뒤엎는 <strong>'카오스 룰렛'</strong> 요소를 결합한<br>단시간 쾌속 대전 게임입니다.</p>
             </div>
             <button class="modal-close-btn" onclick="closeModal('introModal')">닫기</button>
-        </div>
-    </div>
-
-    <!-- [모달] 플레이 방법 -->
-    <div id="howToModal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <h2 class="modal-title">플레이 방법</h2>
-            <div class="modal-body">
-                <h3>🎲 익숙한 코어 룰</h3>
-                <p>주사위를 굴려 9x9 보드판을 이동하고 땅을 차지하세요. 남의 땅을 밟으면 파산할 수 있습니다!</p>
-                <hr>
-                <h3>🃏 증강 카드 시스템</h3>
-                <p>실버, 골드, 프리즘 타일에 도착해 강력한 카드를 수집하세요. 통행료 3배 폭탄이나 메테오로 선두를 파괴할 수 있습니다.</p>
-                <hr>
-                <h3>🎡 카오스 룰렛</h3>
-                <p>중앙 룰렛이 돌면 전역 패시브가 발동됩니다. 모든 통행료가 2배로 폭등하는 '억까'를 조심하세요!</p>
-            </div>
-            <button class="modal-close-btn" onclick="closeModal('howToModal')">닫기</button>
         </div>
     </div>
 
@@ -282,10 +306,14 @@
     </div>
 
     <script>
-        // 홈 버튼 동작
-        function goHome() {
-            document.getElementById('page-2').classList.add('hidden');
-            document.getElementById('page-1').classList.remove('hidden');
+        // 페이지 전환을 통합적으로 관리하는 함수
+        function showPage(targetPageId) {
+            // 1. 모든 페이지 숨기기
+            const pages = document.querySelectorAll('.page-container');
+            pages.forEach(page => page.classList.add('hidden'));
+
+            // 2. 요청받은 페이지만 보이기
+            document.getElementById(targetPageId).classList.remove('hidden');
         }
 
         // 모달 열기/닫기 제어
@@ -304,7 +332,7 @@
             }
         }
 
-        // 페이지 1 -> 2 전환
+        // 닉네임 입력 후 대기실(방 만들기) 화면으로 전환
         function enterGame() {
             const nicknameInput = document.getElementById('nickname');
             const nickname = nicknameInput.value.trim();
@@ -316,8 +344,7 @@
             }
 
             sessionStorage.setItem('chaosMarbleNickname', nickname);
-            document.getElementById('page-1').classList.add('hidden');
-            document.getElementById('page-2').classList.remove('hidden');
+            showPage('page-2'); // showPage 함수를 재사용하여 화면 전환
         }
 
         function createRoom() {
