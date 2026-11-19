@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>카오스 마블 (Chaos Marble)</title>
     <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
-    <!-- Socket.io 클라이언트 CDN 추가 -->
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -87,7 +86,6 @@
         <div id="page-lobby" class="page-container hidden">
             <div class="room-code-badge" id="display-room-code">ROOM CODE: </div>
             
-            <!-- 슬롯 UI 구조 변경 (JS로 동적 렌더링하기 쉽게 id 부여) -->
             <div class="player-slots">
                 <div class="player-slot" id="slot-0">
                     <div class="status-text" id="status-0"></div>
@@ -132,36 +130,39 @@
     </div>
 
     <script>
-        // 백엔드 서버 주소 (로컬 테스트용)
-        // 추후 AWS나 Render에 백엔드를 배포하면 이 주소를 실제 서버 URL로 변경해야 합니다.
-        const socket = io('https://special-space-xylophone-69wvp64wvp95hrj74-3000.app.github.dev'); 
+        // 본인의 코드스페이스 포트 3000 Forwarded 주소를 넣어주세요.
+        const SERVER_URL = 'http://localhost:3000';
+        sessionStorage.setItem('chaosMarbleServerUrl', SERVER_URL);
+
+        const socket = io(SERVER_URL);
         let myRoomCode = "";
 
-        // 서버로부터 에러 메시지 수신
         socket.on('errorMsg', (msg) => {
             alert(msg);
         });
 
-        // 방 생성 성공
         socket.on('roomCreated', (code) => {
             myRoomCode = code;
+            sessionStorage.setItem('chaosMarbleRoomCode', code);
+            sessionStorage.setItem('chaosMarbleIsHost', 'true');
             document.getElementById('display-room-code').innerText = `ROOM CODE: ${code}`;
             document.getElementById('btn-host-start').classList.remove('hidden');
             document.getElementById('btn-client-ready').classList.add('hidden');
             showPage('page-lobby');
         });
 
-        // 방 입장 성공
         socket.on('roomJoined', (code) => {
             myRoomCode = code;
+            sessionStorage.setItem('chaosMarbleRoomCode', code);
+            sessionStorage.setItem('chaosMarbleIsHost', 'false');
             document.getElementById('display-room-code').innerText = `ROOM CODE: ${code}`;
             document.getElementById('btn-client-ready').classList.remove('hidden');
             document.getElementById('btn-host-start').classList.add('hidden');
             showPage('page-lobby');
         });
 
-        // 대기실 UI 갱신 (누군가 들어오거나 나가거나 준비할 때마다 실행)
         socket.on('roomUpdated', (players) => {
+            sessionStorage.setItem('chaosMarblePlayers', JSON.stringify(players));
             for (let i = 0; i < 4; i++) {
                 const slot = document.getElementById(`slot-${i}`);
                 const avatar = document.getElementById(`avatar-${i}`);
@@ -172,7 +173,7 @@
                     const p = players[i];
                     nameBox.innerText = p.name;
                     nameBox.style.color = "#2c3e50";
-                    
+
                     if (p.isHost) {
                         avatar.innerText = "방장";
                         avatar.style.backgroundColor = "#e74c3c";
@@ -185,7 +186,6 @@
                     }
                     slot.style.borderColor = "#f39c12";
                 } else {
-                    // 빈 슬롯 초기화
                     avatar.innerText = "대기중";
                     avatar.style.backgroundColor = "#bdc3c7";
                     nameBox.innerText = "Empty Slot";
@@ -196,24 +196,28 @@
             }
         });
 
-        // UI 이벤트
+        // 방장이 시작 버튼을 누르면 방 전체 인원이 game.html로 이동
+        socket.on('gameStarted', ({ roomCode, players }) => {
+            sessionStorage.setItem('chaosMarbleRoomCode', roomCode);
+            sessionStorage.setItem('chaosMarblePlayers', JSON.stringify(players));
+            window.location.href = 'game.html';
+        });
+
         function showPage(targetPageId) {
             document.querySelectorAll('.page-container').forEach(p => p.classList.add('hidden'));
             document.getElementById(targetPageId).classList.remove('hidden');
         }
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-        
         function handleEnterKey(event) { if (event.key === 'Enter') enterGame(); }
 
         function enterGame() {
             const nick = document.getElementById('nickname').value.trim();
             if (nick === '') { alert('닉네임을 입력해주세요!'); return; }
             sessionStorage.setItem('chaosMarbleNickname', nick);
-            showPage('page-2'); 
+            showPage('page-2');
         }
 
-        // 실제 서버로 이벤트 전송 (emit)
         function createRoom() {
             const nickname = sessionStorage.getItem('chaosMarbleNickname');
             socket.emit('createRoom', nickname);
@@ -222,7 +226,7 @@
         function joinRoom() {
             const nickname = sessionStorage.getItem('chaosMarbleNickname');
             const code = prompt("참여할 방 코드를 입력하세요:");
-            if(code) {
+            if (code) {
                 socket.emit('joinRoom', { roomCode: code, nickname: nickname });
             }
         }
@@ -230,7 +234,7 @@
         function toggleReady() {
             socket.emit('toggleReady', myRoomCode);
             const btn = document.getElementById('btn-client-ready');
-            if(btn.innerText === "게임 준비") {
+            if (btn.innerText === "게임 준비") {
                 btn.innerText = "준비 취소";
                 btn.style.backgroundColor = "#e74c3c";
                 btn.style.boxShadow = "0 6px 0 #c0392b, 0 10px 15px rgba(0,0,0,0.2)";
@@ -241,7 +245,10 @@
             }
         }
 
-        function startGame() { alert("모두 준비되었나요? 추후 Phaser 3 보드판 화면으로 이동합니다."); }
+        function startGame() {
+            if (!myRoomCode) return;
+            socket.emit('startGame', myRoomCode);
+        }
     </script>
 </body>
 </html>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>카오스 마블 - 인게임</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body, html {
+            width: 100%;
+            height: 100%;
+            font-family: 'Jua', sans-serif;
+            background: radial-gradient(circle at center, #f2ffc2 0%, #a8e063 100%);
+            overflow: hidden;
+            color: #2c3e50;
+        }
+
+        /* 상단 플레이어 상태바 & 방 정보 */
+        .top-hud {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 68px;
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(6px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 20;
+        }
+
+        .room-pill {
+            background: #fffaf0;
+            border: 3px solid #e74c3c;
+            color: #c0392b;
+            padding: 6px 16px;
+            border-radius: 16px;
+            font-size: 20px;
+        }
+
+        .players-bar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .player-chip {
+            background: #ffffff;
+            border: 3px solid #f39c12;
+            border-radius: 14px;
+            padding: 6px 14px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .player-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .lobby-back-btn {
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            padding: 8px 18px;
+            font-family: 'Jua', sans-serif;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #c0392b;
+        }
+        .lobby-back-btn:active {
+            transform: translateY(3px);
+            box-shadow: none;
+        }
+
+        /* 중앙 보드판 영역 */
+        .board-stage {
+            width: 100%;
+            height: 100vh;
+            padding-top: 76px;
+            padding-bottom: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #phaser-game-container {
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+            border: 4px solid #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <header class="top-hud">
+        <div class="room-pill" id="hud-room-code">ROOM: -</div>
+        <div class="players-bar" id="hud-players-bar"></div>
+        <button class="lobby-back-btn" onclick="returnToLobby()">나가기</button>
+    </header>
+
+    <main class="board-stage">
+        <div id="phaser-game-container"></div>
+    </main>
+
+    <script>
+        const SERVER_URL = sessionStorage.getItem('chaosMarbleServerUrl') || 'http://localhost:3000';
+        const roomCode = sessionStorage.getItem('chaosMarbleRoomCode') || 'TEST';
+        const myNickname = sessionStorage.getItem('chaosMarbleNickname') || '플레이어';
+        const savedPlayers = JSON.parse(sessionStorage.getItem('chaosMarblePlayers') || '[]');
+
+        const PLAYER_COLORS = ['#e74c3c', '#3498db', '#2ecc71', '#9b59b6'];
+
+        document.getElementById('hud-room-code').innerText = `ROOM: ${roomCode}`;
+
+        function renderPlayerHud(players) {
+            const bar = document.getElementById('hud-players-bar');
+            const list = players.length > 0 ? players : [{ name: myNickname, isHost: true }];
+            bar.innerHTML = list.map((p, idx) => `
+                <div class="player-chip">
+                    <span class="player-dot" style="background:${PLAYER_COLORS[idx % PLAYER_COLORS.length]}"></span>
+                    <span>${p.name}${p.isHost ? ' (방장)' : ''}</span>
+                </div>
+            `).join('');
+        }
+
+        renderPlayerHud(savedPlayers);
+
+        const socket = io(SERVER_URL);
+        socket.on('connect', () => {
+            if (roomCode !== 'TEST') {
+                socket.emit('joinGameSession', { roomCode, nickname: myNickname });
+            }
+        });
+
+        socket.on('gameSessionSynced', ({ players }) => {
+            renderPlayerHud(players);
+        });
+
+        function returnToLobby() {
+            window.location.href = 'index.html';
+        }
+
+        // 9x9 외곽 32칸 좌표 정의
+        // 오른쪽 아래 (0,0) 출발 -> 시계방향: (0,8) 어디로든문 -> (8,8) 카오스 룰렛 -> (8,0) 감옥 -> (0,0)
+        // x: 오른쪽(0) -> 왼쪽(8), y: 아래(0) -> 위(8)
+        const CORNERS = {
+            START:    { x: 0, y: 0, label: '출발',       color: 0x2ecc71, border: 0x1e8449 },
+            DOOR:     { x: 0, y: 8, label: '어디로든문', color: 0x3498db, border: 0x1f618d },
+            ROULETTE: { x: 8, y: 8, label: '카오스\n룰렛', color: 0x9b59b6, border: 0x6c3483 },
+            JAIL:     { x: 8, y: 0, label: '감옥',       color: 0xe74c3c, border: 0x922b21 }
+        };
+
+        function buildOuterTiles32() {
+            const tiles = [];
+            // 1. 우측 열 아래->위: (0,0) ~ (0,8) [9칸]
+            for (let y = 0; y <= 8; y++) {
+                tiles.push({ index: tiles.length, x: 0, y });
+            }
+            // 2. 상단 행 우->좌: (1,8) ~ (8,8) [8칸]
+            for (let x = 1; x <= 8; x++) {
+                tiles.push({ index: tiles.length, x, y: 8 });
+            }
+            // 3. 좌측 열 위->아래: (8,7) ~ (8,0) [8칸]
+            for (let y = 7; y >= 0; y--) {
+                tiles.push({ index: tiles.length, x: 8, y });
+            }
+            // 4. 하단 행 좌->우: (7,0) ~ (1,0) [7칸] -> 총 32칸
+            for (let x = 7; x >= 1; x--) {
+                tiles.push({ index: tiles.length, x, y: 0 });
+            }
+
+            return tiles.map((tile) => {
+                if (tile.x === 0 && tile.y === 0) return { ...tile, type: 'corner', ...CORNERS.START };
+                if (tile.x === 0 && tile.y === 8) return { ...tile, type: 'corner', ...CORNERS.DOOR };
+                if (tile.x === 8 && tile.y === 8) return { ...tile, type: 'corner', ...CORNERS.ROULETTE };
+                if (tile.x === 8 && tile.y === 0) return { ...tile, type: 'corner', ...CORNERS.JAIL };
+                return {
+                    ...tile,
+                    type: 'normal',
+                    label: `(${tile.x},${tile.y})`,
+                    color: 0xfef9e7,
+                    border: 0xd4ac0d
+                };
+            });
+        }
+
+        class ChaosBoardScene extends Phaser.Scene {
+            constructor() {
+                super({ key: 'ChaosBoardScene' });
+            }
+
+            create() {
+                const size = this.scale.width;
+                const padding = 20;
+                const boardSize = size - padding * 2;
+                const cellSize = boardSize / 9;
+
+                // 외곽 프레임
+                const bg = this.add.graphics();
+                bg.fillStyle(0xfffaf0, 1);
+                bg.fillRoundedRect(padding - 8, padding - 8, boardSize + 16, boardSize + 16, 18);
+                bg.lineStyle(4, 0xf39c12, 1);
+                bg.strokeRoundedRect(padding - 8, padding - 8, boardSize + 16, boardSize + 16, 18);
+
+                // 중앙 7x7 영역
+                const innerX = padding + cellSize;
+                const innerY = padding + cellSize;
+                const innerSize = cellSize * 7;
+                const centerBg = this.add.graphics();
+                centerBg.fillStyle(0xe8f8f5, 0.92);
+                centerBg.fillRoundedRect(innerX + 4, innerY + 4, innerSize - 8, innerSize - 8, 14);
+                centerBg.lineStyle(2, 0xa3e4d7, 1);
+                centerBg.strokeRoundedRect(innerX + 4, innerY + 4, innerSize - 8, innerSize - 8, 14);
+
+                this.add.text(size / 2, size / 2 - 14, 'CHAOS MARBLE', {
+                    fontFamily: 'Jua',
+                    fontSize: '34px',
+                    color: '#16a085'
+                }).setOrigin(0.5);
+
+                this.add.text(size / 2, size / 2 + 20, '9x9 외곽 32타일 · (0,0) 출발 시계방향', {
+                    fontFamily: 'Jua',
+                    fontSize: '18px',
+                    color: '#566573'
+                }).setOrigin(0.5);
+
+                // (x,y) -> 캔버스 좌표 변환
+                // x=0이 오른쪽이므로 col = 8 - x
+                // y=0이 아래쪽이므로 row = 8 - y
+                const toPixel = (x, y) => {
+                    const col = 8 - x;
+                    const row = 8 - y;
+                    return {
+                        left: padding + col * cellSize,
+                        top: padding + row * cellSize,
+                        centerX: padding + (col + 0.5) * cellSize,
+                        centerY: padding + (row + 0.5) * cellSize
+                    };
+                };
+
+                const tiles = buildOuterTiles32();
+                tiles.forEach((tile) => {
+                    const pos = toPixel(tile.x, tile.y);
+                    const g = this.add.graphics();
+                    const isCorner = tile.type === 'corner';
+
+                    g.fillStyle(tile.color, 1);
+                    g.fillRoundedRect(pos.left + 2, pos.top + 2, cellSize - 4, cellSize - 4, isCorner ? 10 : 6);
+                    g.lineStyle(isCorner ? 3.5 : 1.8, tile.border, 1);
+                    g.strokeRoundedRect(pos.left + 2, pos.top + 2, cellSize - 4, cellSize - 4, isCorner ? 10 : 6);
+
+                    if (isCorner) {
+                        this.add.text(pos.centerX, pos.centerY - 8, tile.label, {
+                            fontFamily: 'Jua',
+                            fontSize: tile.label.includes('\n') ? '15px' : '17px',
+                            color: '#ffffff',
+                            align: 'center',
+                            stroke: '#2c3e50',
+                            strokeThickness: 3
+                        }).setOrigin(0.5);
+
+                        this.add.text(pos.centerX, pos.centerY + 18, `(${tile.x},${tile.y})`, {
+                            fontFamily: 'Jua',
+                            fontSize: '12px',
+                            color: '#ffffff'
+                        }).setOrigin(0.5);
+                    } else {
+                        this.add.text(pos.centerX, pos.centerY, `(${tile.x},${tile.y})`, {
+                            fontFamily: 'Jua',
+                            fontSize: '12px',
+                            color: '#7f8c8d'
+                        }).setOrigin(0.5);
+                    }
+                });
+            }
+        }
+
+        const availableSize = Math.min(window.innerWidth - 40, window.innerHeight - 104, 760);
+        const canvasSize = Math.max(460, availableSize);
+
+        new Phaser.Game({
+            type: Phaser.AUTO,
+            width: canvasSize,
+            height: canvasSize,
+            parent: 'phaser-game-container',
+            backgroundColor: '#f2ffc2',
+            scene: [ChaosBoardScene]
+        });
+    </script>
+</body>
+</html>
