@@ -171,38 +171,33 @@
             '0,3': { tier: 'prism',  label: '프리즘\n증강', color: 0xd7bde2, border: 0x8e44ad, textColor: '#4a235a' }
         };
 
-        // 시계방향 진행 순서에 맞춘 22개 해외 도시 및 랜드마크 배치
-        // (0,0) 출발 -> (0,1)~(0,6) -> (1,8)~(7,8) -> (8,7)~(8,1) -> (7,0)~(1,0)
+        // 시계방향 진행 순서에 맞춘 22개 부동산 (방콕 40만 시작 -> 멕시코시티까지 칸당 +5~10만 랜덤 상승)
         const PROPERTY_TILES = {
-            // 1. 좌측 열 아래->위: (0,1), (0,2), (0,4), (0,5), (0,6)
-            '0,1': { city: '멕시코시티', landmark: '소칼로',     icon: 'aztec_step',   color: 0xd4efdf, border: 0x27ae60, price: 80 },
-            '0,2': { city: '리우',       landmark: '예수상',     icon: 'christ_statue',color: 0xd6eaf8, border: 0x2980b9, price: 90 },
-            '0,4': { city: '뉴욕',       landmark: '자유의여신', icon: 'liberty',      color: 0xd4efdf, border: 0x27ae60, price: 100 },
-            '0,5': { city: '마드리드',   landmark: '왕궁',       icon: 'royal_palace', color: 0xfadbd8, border: 0xe74c3c, price: 110 },
-            '0,6': { city: '바르셀로나', landmark: '사그라다',   icon: 'sagrada',      color: 0xf9e79f, border: 0xd4ac0d, price: 120 },
+            '1,0': { city: '방콕',       landmark: '왓아룬',     icon: 'wat_arun',     color: 0xfdebd0, border: 0xe67e22, price: 40 },
+            '2,0': { city: '하노이',     landmark: '하롱베이',   icon: 'halong_rock',  color: 0xd4efdf, border: 0x27ae60, price: 47 },
+            '3,0': { city: '마닐라',     landmark: '인트라무로스', icon: 'fort_arch',    color: 0xfdebd0, border: 0xe67e22, price: 52 },
+            '4,0': { city: '자카르타',   landmark: '모나스',     icon: 'monas_tower',  color: 0xfadbd8, border: 0xe74c3c, price: 61 },
+            '5,0': { city: '쿠알라',     landmark: '페트로나스', icon: 'twin_towers',  color: 0xd6eaf8, border: 0x2980b9, price: 67 },
+            '7,0': { city: '도쿄',       landmark: '도쿄타워',   icon: 'tokyo_tower',  color: 0xfadbd8, border: 0xe74c3c, price: 76 },
 
-            // 2. 상단 행 우->좌: (1,8), (2,8), (3,8), (5,8), (6,8), (7,8)
-            '1,8': { city: '런던',       landmark: '빅벤',       icon: 'big_ben',      color: 0xe8daef, border: 0x8e44ad, price: 140 },
-            '2,8': { city: '로마',       landmark: '콜로세움',   icon: 'colosseum',    color: 0xfdebd0, border: 0xe67e22, price: 150 },
-            '3,8': { city: '파리',       landmark: '에펠탑',     icon: 'eiffel_tower', color: 0xfadbd8, border: 0xe74c3c, price: 160 },
-            '5,8': { city: '이스탄불',   landmark: '블루모스크', icon: 'mosque_dome',  color: 0xd6eaf8, border: 0x2980b9, price: 180 },
-            '6,8': { city: '두바이',     landmark: '부르즈할리파', icon: 'burj_spire',   color: 0xfdebd0, border: 0xe67e22, price: 190 },
-            '7,8': { city: '카이로',     landmark: '피라미드',   icon: 'pyramid',      color: 0xf9e79f, border: 0xd4ac0d, price: 210 },
+            '8,1': { city: '베이징',     landmark: '자금성',     icon: 'palace_gate',  color: 0xf9e79f, border: 0xd4ac0d, price: 82 },
+            '8,2': { city: '타이베이',   landmark: '타이베이101', icon: 'taipei_101',   color: 0xd6eaf8, border: 0x2980b9, price: 91 },
+            '8,4': { city: '싱가포르',   landmark: '마리나베이', icon: 'marina_bay',   color: 0xd4efdf, border: 0x27ae60, price: 96 },
+            '8,6': { city: '홍콩',       landmark: '빅토리아피크', icon: 'peak_tower',   color: 0xe8daef, border: 0x8e44ad, price: 105 },
+            '8,7': { city: '시드니',     landmark: '오페라하우스', icon: 'opera_house',  color: 0xd6eaf8, border: 0x2980b9, price: 112 },
 
-            // 3. 우측 열 위->아래: (8,7), (8,6), (8,4), (8,2), (8,1)
-            '8,7': { city: '시드니',     landmark: '오페라하우스', icon: 'opera_house',  color: 0xd6eaf8, border: 0x2980b9, price: 220 },
-            '8,6': { city: '홍콩',       landmark: '빅토리아피크', icon: 'peak_tower',   color: 0xe8daef, border: 0x8e44ad, price: 240 },
-            '8,4': { city: '싱가포르',   landmark: '마리나베이', icon: 'marina_bay',   color: 0xd4efdf, border: 0x27ae60, price: 250 },
-            '8,2': { city: '타이베이',   landmark: '타이베이101', icon: 'taipei_101',   color: 0xd6eaf8, border: 0x2980b9, price: 270 },
-            '8,1': { city: '베이징',     landmark: '자금성',     icon: 'palace_gate',  color: 0xf9e79f, border: 0xd4ac0d, price: 280 },
+            '7,8': { city: '카이로',     landmark: '피라미드',   icon: 'pyramid',      color: 0xf9e79f, border: 0xd4ac0d, price: 118 },
+            '6,8': { city: '두바이',     landmark: '부르즈할리파', icon: 'burj_spire',   color: 0xfdebd0, border: 0xe67e22, price: 127 },
+            '5,8': { city: '이스탄불',   landmark: '블루모스크', icon: 'mosque_dome',  color: 0xd6eaf8, border: 0x2980b9, price: 132 },
+            '3,8': { city: '파리',       landmark: '에펠탑',     icon: 'eiffel_tower', color: 0xfadbd8, border: 0xe74c3c, price: 141 },
+            '2,8': { city: '로마',       landmark: '콜로세움',   icon: 'colosseum',    color: 0xfdebd0, border: 0xe67e22, price: 149 },
+            '1,8': { city: '런던',       landmark: '빅벤',       icon: 'big_ben',      color: 0xe8daef, border: 0x8e44ad, price: 155 },
 
-            // 4. 하단 행 좌->우: (7,0), (5,0), (4,0), (3,0), (2,0), (1,0)
-            '7,0': { city: '도쿄',       landmark: '도쿄타워',   icon: 'tokyo_tower',  color: 0xfadbd8, border: 0xe74c3c, price: 300 },
-            '5,0': { city: '쿠알라',     landmark: '페트로나스', icon: 'twin_towers',  color: 0xd6eaf8, border: 0x2980b9, price: 310 },
-            '4,0': { city: '자카르타',   landmark: '모나스',     icon: 'monas_tower',  color: 0xfadbd8, border: 0xe74c3c, price: 320 },
-            '3,0': { city: '마닐라',     landmark: '인트라무로스', icon: 'fort_arch',    color: 0xfdebd0, border: 0xe67e22, price: 340 },
-            '2,0': { city: '하노이',     landmark: '하롱베이',   icon: 'halong_rock',  color: 0xd4efdf, border: 0x27ae60, price: 350 },
-            '1,0': { city: '방콕',       landmark: '왓아룬',     icon: 'wat_arun',     color: 0xfdebd0, border: 0xe67e22, price: 360 }
+            '0,6': { city: '바르셀로나', landmark: '사그라다',   icon: 'sagrada',      color: 0xf9e79f, border: 0xd4ac0d, price: 163 },
+            '0,5': { city: '마드리드',   landmark: '왕궁',       icon: 'royal_palace', color: 0xfadbd8, border: 0xe74c3c, price: 171 },
+            '0,4': { city: '뉴욕',       landmark: '자유의여신', icon: 'liberty',      color: 0xd4efdf, border: 0x27ae60, price: 177 },
+            '0,2': { city: '리우',       landmark: '예수상',     icon: 'christ_statue',color: 0xd6eaf8, border: 0x2980b9, price: 185 },
+            '0,1': { city: '멕시코시티', landmark: '소칼로',     icon: 'aztec_step',   color: 0xd4efdf, border: 0x27ae60, price: 193 }
         };
 
         function buildOuterTiles32() {
@@ -460,7 +455,7 @@
                     color: '#16a085'
                 }).setOrigin(0.5);
 
-                this.add.text(size / 2, size / 2 + 16, '외곽 32타일 완성 (거점 4 · 증강 6 · 도시 22)', {
+                this.add.text(size / 2, size / 2 + 16, '방콕 40만 시작 → 멕시코시티 193만 (시계방향)', {
                     fontFamily: 'Jua',
                     fontSize: '17px',
                     color: '#566573'
@@ -477,7 +472,7 @@
                     };
                 };
 
-                const iconScale = Math.max(0.92, cellSize / 72);
+                const iconScale = Math.max(1.05, cellSize / 64);
                 const tiles = buildOuterTiles32();
 
                 tiles.forEach((tile) => {
@@ -523,7 +518,7 @@
                         }).setOrigin(0.5);
                     } else if (isProperty) {
                         // 1. 상단: 랜드마크 그래픽 + 랜드마크명
-                        drawLandmarkGraphic(this, tile.icon, pos.centerX, pos.top + cellSize * 0.25, iconScale);
+                        drawLandmarkGraphic(this, tile.icon, pos.centerX, pos.top + cellSize * 0.24, iconScale);
 
                         this.add.text(pos.centerX, pos.top + cellSize * 0.48, tile.landmark, {
                             fontFamily: 'Jua',
