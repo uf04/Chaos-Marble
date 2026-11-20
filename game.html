@@ -153,22 +153,20 @@
         }
 
         // 9x9 외곽 32칸 좌표 정의
-        // 오른쪽 아래 (0,0) 출발 -> 시계방향: (0,8) 어디로든문 -> (8,8) 카오스 룰렛 -> (8,0) 감옥 -> (0,0)
-        // x: 오른쪽(0) -> 왼쪽(8), y: 아래(0) -> 위(8)
         const CORNERS = {
-            START:    { x: 0, y: 0, label: '출발',       color: 0x2ecc71, border: 0x1e8449 },
-            DOOR:     { x: 0, y: 8, label: '어디로든문', color: 0x3498db, border: 0x1f618d },
-            ROULETTE: { x: 8, y: 8, label: '카오스\n룰렛', color: 0x9b59b6, border: 0x6c3483 },
-            JAIL:     { x: 8, y: 0, label: '감옥',       color: 0xe74c3c, border: 0x922b21 }
+            START:    { x: 0, y: 0, cornerKey: 'start',    label: '출발', color: 0x2ecc71, border: 0x1e8449 },
+            DOOR:     { x: 0, y: 8, cornerKey: 'door',     label: '',     color: 0xd6eaf8, border: 0x2980b9 },
+            ROULETTE: { x: 8, y: 8, cornerKey: 'roulette', label: '',     color: 0x2c3e50, border: 0x8e44ad },
+            JAIL:     { x: 8, y: 0, cornerKey: 'jail',     label: '',     color: 0x566573, border: 0x2c3e50 }
         };
 
         const AUGMENT_TILES = {
-            '6,0': { tier: 'silver', label: '실버\n증강', color: 0xd5dbdb, border: 0x7f8c8d, textColor: '#2c3e50' },
-            '8,3': { tier: 'silver', label: '실버\n증강', color: 0xd5dbdb, border: 0x7f8c8d, textColor: '#2c3e50' },
-            '0,7': { tier: 'silver', label: '실버\n증강', color: 0xd5dbdb, border: 0x7f8c8d, textColor: '#2c3e50' },
-            '8,5': { tier: 'gold',   label: '골드\n증강', color: 0xf9e79f, border: 0xd4ac0d, textColor: '#7d6608' },
-            '4,8': { tier: 'gold',   label: '골드\n증강', color: 0xf9e79f, border: 0xd4ac0d, textColor: '#7d6608' },
-            '0,3': { tier: 'prism',  label: '프리즘\n증강', color: 0xd7bde2, border: 0x8e44ad, textColor: '#4a235a' }
+            '6,0': { tier: 'silver', label: '실버\n증강', border: 0x95a5a6, textColor: '#2c3e50' },
+            '8,3': { tier: 'silver', label: '실버\n증강', border: 0x95a5a6, textColor: '#2c3e50' },
+            '0,7': { tier: 'silver', label: '실버\n증강', border: 0x95a5a6, textColor: '#2c3e50' },
+            '8,5': { tier: 'gold',   label: '골드\n증강', border: 0xd4ac0d, textColor: '#6e5200' },
+            '4,8': { tier: 'gold',   label: '골드\n증강', border: 0xd4ac0d, textColor: '#6e5200' },
+            '0,3': { tier: 'prism',  label: '프리즘\n증강', border: 0xff69b4, textColor: '#6c1d45' }
         };
 
         // 시계방향 진행 순서에 맞춘 22개 부동산 (방콕 40만 시작 -> 멕시코시티까지 칸당 +5~10만 랜덤 상승)
@@ -233,6 +231,197 @@
                     textColor: '#7f8c8d'
                 };
             });
+        }
+
+        // 모서리 거점 (감옥, 카오스 룰렛, 어디로든 문) 2D 그래픽 렌더링
+        function drawCornerGraphic(scene, cornerKey, cx, cy, cellSize) {
+            const g = scene.add.graphics();
+            const s = (v) => v * (cellSize / 78);
+
+            if (cornerKey === 'jail') {
+                // 감옥: 창틀 + 수직 쇠창살
+                const w = s(42);
+                const h = s(44);
+                g.fillStyle(0x2c3e50, 1);
+                g.fillRoundedRect(cx - w / 2, cy - h / 2, w, h, s(5));
+
+                // 창문 빛 표현
+                g.fillStyle(0x34495e, 1);
+                g.fillRect(cx - w / 2 + s(4), cy - h / 2 + s(4), w - s(8), h - s(8));
+
+                // 수직 쇠창살 4개
+                g.fillStyle(0xbdc3c7, 1);
+                const barCount = 4;
+                for (let i = 0; i < barCount; i++) {
+                    const bx = cx - w / 2 + s(8) + i * ((w - s(16)) / (barCount - 1)) - s(2);
+                    g.fillRect(bx, cy - h / 2 + s(3), s(4), h - s(6));
+                }
+
+                // 가로 철제 프레임
+                g.fillStyle(0x95a5a6, 1);
+                g.fillRect(cx - w / 2 + s(3), cy - s(2), w - s(6), s(4));
+                g.lineStyle(s(2.5), 0x1c2833, 1);
+                g.strokeRoundedRect(cx - w / 2, cy - h / 2, w, h, s(5));
+            } else if (cornerKey === 'roulette') {
+                // 카오스 룰렛: 8분할 컬러 원판 + 중앙 축 + 상단 포인터
+                const r = s(23);
+                const sliceColors = [0xe74c3c, 0xf1c40f, 0x2ecc71, 0x3498db, 0x9b59b6, 0xe67e22, 0x1abc9c, 0xff69b4];
+                const step = (Math.PI * 2) / sliceColors.length;
+
+                sliceColors.forEach((col, i) => {
+                    g.fillStyle(col, 1);
+                    g.beginPath();
+                    g.moveTo(cx, cy + s(2));
+                    g.arc(cx, cy + s(2), r, i * step, (i + 1) * step, false);
+                    g.closePath();
+                    g.fillPath();
+                });
+
+                // 룰렛 테두리 및 중앙 핀
+                g.lineStyle(s(2.5), 0xffffff, 1);
+                g.strokeCircle(cx, cy + s(2), r);
+                g.fillStyle(0xf1c40f, 1);
+                g.fillCircle(cx, cy + s(2), s(6));
+                g.lineStyle(s(1.8), 0x2c3e50, 1);
+                g.strokeCircle(cx, cy + s(2), s(6));
+
+                // 상단 빨간 포인터 핀
+                g.fillStyle(0xffeb3b, 1);
+                g.fillTriangle(cx, cy - r + s(5), cx - s(5), cy - r - s(4), cx + s(5), cy - r - s(4));
+                g.lineStyle(s(1.5), 0xc0392b, 1);
+                g.strokeTriangle(cx, cy - r + s(5), cx - s(5), cy - r - s(4), cx + s(5), cy - r - s(4));
+            } else if (cornerKey === 'door') {
+                // 어디로든 문: 분홍색 문틀 + 문짝 + 황금 손잡이
+                const w = s(32);
+                const h = s(46);
+                // 문틀 외곽
+                g.fillStyle(0xff69b4, 1);
+                g.fillRoundedRect(cx - w / 2 - s(3), cy - h / 2 - s(2), w + s(6), h + s(4), s(4));
+                // 문 본체
+                g.fillStyle(0xff85c0, 1);
+                g.fillRect(cx - w / 2, cy - h / 2 + s(1), w, h - s(2));
+                // 문 위/아래 장식 패널
+                g.lineStyle(s(1.8), 0xc2185b, 1);
+                g.strokeRect(cx - w / 2 + s(4), cy - h / 2 + s(5), w - s(8), h * 0.36);
+                g.strokeRect(cx - w / 2 + s(4), cy + s(3), w - s(8), h * 0.36);
+                // 황금 문손잡이
+                g.fillStyle(0xf1c40f, 1);
+                g.fillCircle(cx + w / 2 - s(6), cy + s(1), s(3.2));
+                g.lineStyle(s(1.2), 0xb7950b, 1);
+                g.strokeCircle(cx + w / 2 - s(6), cy + s(1), s(3.2));
+            }
+        }
+
+        // 십자 별빛 스파클 도형 그리기
+        function drawSparkleStar(g, x, y, radius, color, alpha = 1) {
+            g.fillStyle(color, alpha);
+            g.beginPath();
+            g.moveTo(x, y - radius);
+            g.lineTo(x + radius * 0.28, y - radius * 0.28);
+            g.lineTo(x + radius, y);
+            g.lineTo(x + radius * 0.28, y + radius * 0.28);
+            g.lineTo(x, y + radius);
+            g.lineTo(x - radius * 0.28, y + radius * 0.28);
+            g.lineTo(x - radius, y);
+            g.lineTo(x - radius * 0.28, y - radius * 0.28);
+            g.closePath();
+            g.fillPath();
+        }
+
+        // 증강 칸 반짝이는 배경 + 스파클 애니메이션 생성
+        function renderShinyAugmentTile(scene, tile, pos, cellSize) {
+            const x = pos.left + 2;
+            const y = pos.top + 2;
+            const w = cellSize - 4;
+            const h = cellSize - 4;
+
+            const base = scene.add.graphics();
+
+            if (tile.tier === 'silver') {
+                // 메탈릭 은색 4분할 그라데이션 + 광택 스트라이프
+                base.fillGradientStyle(0xf8f9f9, 0xd5dbdb, 0xbdc3c7, 0xeaf2f8, 1);
+                base.fillRoundedRect(x, y, w, h, 7);
+
+                // 대각선 은빛 광택 띠
+                base.fillStyle(0xffffff, 0.55);
+                base.beginPath();
+                base.moveTo(x + w * 0.15, y);
+                base.lineTo(x + w * 0.45, y);
+                base.lineTo(x, y + h * 0.45);
+                base.lineTo(x, y + h * 0.15);
+                base.closePath();
+                base.fillPath();
+            } else if (tile.tier === 'gold') {
+                // 화려한 황금색 그라데이션 + 금빛 광택 스트라이프
+                base.fillGradientStyle(0xfff59d, 0xfbc02d, 0xf57f17, 0xffe082, 1);
+                base.fillRoundedRect(x, y, w, h, 7);
+
+                base.fillStyle(0xffffff, 0.5);
+                base.beginPath();
+                base.moveTo(x + w * 0.2, y);
+                base.lineTo(x + w * 0.52, y);
+                base.lineTo(x, y + h * 0.52);
+                base.lineTo(x, y + h * 0.2);
+                base.closePath();
+                base.fillPath();
+            } else if (tile.tier === 'prism') {
+                // 솜사탕 느낌의 분홍색 위주 파스텔 그라데이션 (로즈핑크 + 베이비핑크 + 연보라/스카이 포인트)
+                base.fillGradientStyle(0xffb6d9, 0xff69b4, 0xf8bbd0, 0xd7bde2, 1);
+                base.fillRoundedRect(x, y, w, h, 7);
+
+                // 솜사탕 하이라이트 띠
+                base.fillStyle(0xfff0f6, 0.65);
+                base.beginPath();
+                base.moveTo(x + w * 0.12, y);
+                base.lineTo(x + w * 0.48, y);
+                base.lineTo(x, y + h * 0.48);
+                base.lineTo(x, y + h * 0.12);
+                base.closePath();
+                base.fillPath();
+
+                // 우측 하단 파스텔 민트/라벤더 솜사탕 광채
+                base.fillStyle(0xe0f7fa, 0.45);
+                base.fillCircle(x + w * 0.78, y + h * 0.78, w * 0.18);
+            }
+
+            // 테두리
+            base.lineStyle(2.8, tile.border, 1);
+            base.strokeRoundedRect(x, y, w, h, 7);
+
+            // 반짝이는 별빛 효과 (Tween으로 교차 반짝임)
+            const starColor = tile.tier === 'gold' ? 0xffffff : tile.tier === 'prism' ? 0xfff5f9 : 0xffffff;
+            const spots = [
+                { sx: x + w * 0.22, sy: y + h * 0.22, r: 5.2, delay: 0 },
+                { sx: x + w * 0.80, sy: y + h * 0.26, r: 4.2, delay: 350 },
+                { sx: x + w * 0.76, sy: y + h * 0.80, r: 5.0, delay: 700 }
+            ];
+
+            spots.forEach((sp) => {
+                const star = scene.add.graphics();
+                drawSparkleStar(star, sp.sx, sp.sy, sp.r, starColor, 1);
+                star.setAlpha(0.25);
+
+                scene.tweens.add({
+                    targets: star,
+                    alpha: { from: 0.2, to: 1 },
+                    duration: 650,
+                    yoyo: true,
+                    repeat: -1,
+                    delay: sp.delay,
+                    ease: 'Sine.easeInOut'
+                });
+            });
+
+            // 중앙 증강 텍스트 (좌표 제거)
+            scene.add.text(pos.centerX, pos.centerY, tile.label, {
+                fontFamily: 'Jua',
+                fontSize: '14px',
+                color: tile.textColor,
+                align: 'center',
+                lineHeight: 15,
+                stroke: '#ffffff',
+                strokeThickness: 2.5
+            }).setOrigin(0.5);
         }
 
         // 2D 도형 조합으로 각 랜드마크 실루엣 렌더링
@@ -449,15 +638,15 @@
                 centerBg.lineStyle(2, 0xa3e4d7, 1);
                 centerBg.strokeRoundedRect(innerX + 4, innerY + 4, innerSize - 8, innerSize - 8, 14);
 
-                this.add.text(size / 2, size / 2 - 18, 'CHAOS MARBLE', {
+                this.add.text(size / 2, size / 2 - 16, 'CHAOS MARBLE', {
                     fontFamily: 'Jua',
-                    fontSize: '34px',
+                    fontSize: '36px',
                     color: '#16a085'
                 }).setOrigin(0.5);
 
-                this.add.text(size / 2, size / 2 + 16, '방콕 40만 시작 → 멕시코시티 193만 (시계방향)', {
+                this.add.text(size / 2, size / 2 + 18, '도파민 폭발 파티 보드게임', {
                     fontFamily: 'Jua',
-                    fontSize: '17px',
+                    fontSize: '18px',
                     color: '#566573'
                 }).setOrigin(0.5);
 
@@ -477,45 +666,34 @@
 
                 tiles.forEach((tile) => {
                     const pos = toPixel(tile.x, tile.y);
-                    const g = this.add.graphics();
                     const isCorner = tile.type === 'corner';
                     const isAugment = tile.type === 'augment';
                     const isProperty = tile.type === 'property';
 
+                    if (isAugment) {
+                        renderShinyAugmentTile(this, tile, pos, cellSize);
+                        return;
+                    }
+
+                    const g = this.add.graphics();
                     g.fillStyle(tile.color, 1);
                     g.fillRoundedRect(pos.left + 2, pos.top + 2, cellSize - 4, cellSize - 4, isCorner ? 10 : 6);
-                    g.lineStyle(isCorner ? 3.5 : (isAugment || isProperty) ? 2.4 : 1.8, tile.border, 1);
+                    g.lineStyle(isCorner ? 3.5 : isProperty ? 2.4 : 1.8, tile.border, 1);
                     g.strokeRoundedRect(pos.left + 2, pos.top + 2, cellSize - 4, cellSize - 4, isCorner ? 10 : 6);
 
                     if (isCorner) {
-                        this.add.text(pos.centerX, pos.centerY - 8, tile.label, {
-                            fontFamily: 'Jua',
-                            fontSize: tile.label.includes('\n') ? '15px' : '17px',
-                            color: '#ffffff',
-                            align: 'center',
-                            stroke: '#2c3e50',
-                            strokeThickness: 3
-                        }).setOrigin(0.5);
-
-                        this.add.text(pos.centerX, pos.centerY + 18, `(${tile.x},${tile.y})`, {
-                            fontFamily: 'Jua',
-                            fontSize: '12px',
-                            color: '#ffffff'
-                        }).setOrigin(0.5);
-                    } else if (isAugment) {
-                        this.add.text(pos.centerX, pos.centerY - 9, tile.label, {
-                            fontFamily: 'Jua',
-                            fontSize: '13px',
-                            color: tile.textColor,
-                            align: 'center',
-                            lineHeight: 14
-                        }).setOrigin(0.5);
-
-                        this.add.text(pos.centerX, pos.centerY + 18, `(${tile.x},${tile.y})`, {
-                            fontFamily: 'Jua',
-                            fontSize: '11px',
-                            color: tile.textColor
-                        }).setOrigin(0.5);
+                        if (tile.cornerKey === 'start') {
+                            this.add.text(pos.centerX, pos.centerY, tile.label, {
+                                fontFamily: 'Jua',
+                                fontSize: '20px',
+                                color: '#ffffff',
+                                align: 'center',
+                                stroke: '#2c3e50',
+                                strokeThickness: 3.5
+                            }).setOrigin(0.5);
+                        } else {
+                            drawCornerGraphic(this, tile.cornerKey, pos.centerX, pos.centerY, cellSize);
+                        }
                     } else if (isProperty) {
                         // 1. 상단: 랜드마크 그래픽 + 랜드마크명
                         drawLandmarkGraphic(this, tile.icon, pos.centerX, pos.top + cellSize * 0.24, iconScale);
@@ -538,12 +716,6 @@
                             fontFamily: 'Jua',
                             fontSize: '10.5px',
                             color: '#7f8c8d'
-                        }).setOrigin(0.5);
-                    } else {
-                        this.add.text(pos.centerX, pos.centerY, `(${tile.x},${tile.y})`, {
-                            fontFamily: 'Jua',
-                            fontSize: '12px',
-                            color: tile.textColor
                         }).setOrigin(0.5);
                     }
                 });
