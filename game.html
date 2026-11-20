@@ -24,49 +24,49 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 58px;
-            background: rgba(255, 255, 255, 0.78);
+            height: 52px;
+            background: rgba(255, 255, 255, 0.84);
             backdrop-filter: blur(6px);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 24px;
+            padding: 0 18px;
             z-index: 20;
         }
 
         .hud-left-group {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .room-pill {
             background: #fffaf0;
-            border: 3px solid #e74c3c;
+            border: 2.5px solid #e74c3c;
             color: #c0392b;
-            padding: 4px 14px;
-            border-radius: 14px;
-            font-size: 18px;
+            padding: 3px 12px;
+            border-radius: 12px;
+            font-size: 17px;
         }
 
         .turn-banner {
             background: #fef9e7;
-            border: 3px solid #f39c12;
+            border: 2.5px solid #f39c12;
             color: #b7950b;
-            padding: 4px 16px;
-            border-radius: 14px;
-            font-size: 17px;
+            padding: 3px 14px;
+            border-radius: 12px;
+            font-size: 16px;
         }
 
         .lobby-back-btn {
             background: #e74c3c;
             color: #fff;
             border: none;
-            border-radius: 12px;
-            padding: 7px 16px;
+            border-radius: 11px;
+            padding: 6px 14px;
             font-family: 'Jua', sans-serif;
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
             box-shadow: 0 3px 0 #c0392b;
         }
@@ -75,60 +75,74 @@
             box-shadow: none;
         }
 
-        /* 3단 메인 인게임 레이아웃 (좌: 상대 플레이어 / 중: 보드판 / 우: 내 영역+주사위+증강) */
+        /* 3단 메인 인게임 레이아웃 (비어있는 공간 최소화 + 영역 간 침범 방지) */
         .game-layout {
-            width: 100%;
-            height: 100vh;
-            padding: 68px 18px 14px 18px;
+            width: 100vw;
+            height: calc(100vh - 52px);
+            margin-top: 52px;
+            padding: 10px 12px;
             display: grid;
-            grid-template-columns: 270px 1fr 300px;
-            gap: 16px;
-            align-items: center;
+            grid-template-columns: 296px minmax(0, 1fr) 328px;
+            gap: 10px;
+            align-items: stretch;
+            overflow: hidden;
         }
 
         /* 좌측: 다른 플레이어 영역 */
         .opponents-column {
             height: 100%;
+            min-width: 0;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            justify-content: flex-start;
-            overflow-y: auto;
-            padding-right: 2px;
+            gap: 8px;
+            overflow: hidden;
         }
 
         .panel-section-title {
             font-size: 16px;
             color: #1e8449;
-            background: rgba(255, 255, 255, 0.72);
-            padding: 6px 12px;
-            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 6px 10px;
+            border-radius: 11px;
             border: 2px solid #2ecc71;
             text-align: center;
+            flex-shrink: 0;
         }
 
-        .opponent-card {
-            background: rgba(255, 255, 255, 0.94);
-            border: 3px solid #bdc3c7;
-            border-radius: 18px;
-            padding: 12px 14px;
-            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+        .opponents-cards-wrap {
+            flex: 1;
+            min-height: 0;
             display: flex;
             flex-direction: column;
             gap: 8px;
-            transition: transform 0.2s, border-color 0.2s;
+            overflow-y: auto;
+        }
+
+        .opponent-card {
+            flex: 1;
+            min-height: 128px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2.5px solid #bdc3c7;
+            border-radius: 16px;
+            padding: 11px 13px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 6px;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         .opponent-card.active-turn {
             border-color: #f39c12;
-            box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.35), 0 8px 16px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 0 0 2px rgba(243, 156, 18, 0.4), 0 6px 12px rgba(0, 0, 0, 0.12);
         }
 
         .player-header-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 8px;
+            gap: 6px;
         }
 
         .player-identity {
@@ -139,21 +153,21 @@
         }
 
         .pawn-badge {
-            width: 26px;
-            height: 26px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
-            border: 3px solid #ffffff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+            border: 2.5px solid #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
             flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #fff;
-            font-size: 13px;
+            font-size: 14px;
         }
 
         .player-name-text {
-            font-size: 18px;
+            font-size: 19px;
             color: #2c3e50;
             white-space: nowrap;
             overflow: hidden;
@@ -164,7 +178,7 @@
             background: #ecf0f1;
             color: #566573;
             border: 2px solid #bdc3c7;
-            border-radius: 10px;
+            border-radius: 9px;
             padding: 2px 8px;
             font-size: 13px;
             flex-shrink: 0;
@@ -173,12 +187,11 @@
         .money-box {
             background: #fef9e7;
             border: 2px solid #f7dc6f;
-            border-radius: 12px;
-            padding: 6px 10px;
+            border-radius: 11px;
+            padding: 6px 11px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 16px;
         }
 
         .money-label {
@@ -188,7 +201,7 @@
 
         .money-value {
             color: #d35400;
-            font-size: 18px;
+            font-size: 19px;
         }
 
         /* 상대방 비공개 증강 슬롯 (실버/골드/프리즘 색상만 표시) */
@@ -200,23 +213,21 @@
         }
 
         .secret-aug-label {
-            font-size: 13px;
+            font-size: 14px;
             color: #7f8c8d;
             margin-right: 2px;
         }
 
         .secret-aug-chip {
-            width: 34px;
-            height: 42px;
+            width: 36px;
+            height: 44px;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 17px;
             font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.14);
-            position: relative;
-            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.14);
         }
 
         .secret-aug-chip.silver {
@@ -235,7 +246,7 @@
             background: linear-gradient(135deg, #ffb6d9 0%, #ff69b4 55%, #d7bde2 100%);
             border: 2.5px solid #ff1493;
             color: #ffffff;
-            text-shadow: 0 1px 2px rgba(108, 29, 69, 0.8);
+            text-shadow: 0 1px 2px rgba(108, 29, 69, 0.85);
         }
 
         .empty-aug-hint {
@@ -243,40 +254,47 @@
             color: #95a5a6;
         }
 
-        /* 중앙: 보드판 영역 */
+        /* 중앙: 보드판 영역 (다른 영역 침범 방지) */
         .board-center-stage {
             width: 100%;
             height: 100%;
+            min-width: 0;
+            min-height: 0;
             display: flex;
             justify-content: center;
             align-items: center;
+            overflow: hidden;
         }
 
         #phaser-game-container {
-            border-radius: 20px;
+            border-radius: 18px;
             overflow: hidden;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
-            border: 4px solid #ffffff;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
+            border: 3.5px solid #ffffff;
+            flex-shrink: 0;
         }
 
         /* 우측: 나의 영역 + 주사위 + 증강 보관함 */
         .my-column {
             height: 100%;
+            min-width: 0;
+            min-height: 0;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            justify-content: space-between;
+            gap: 8px;
+            overflow: hidden;
         }
 
         .my-profile-card {
             background: #ffffff;
-            border: 3.5px solid #3498db;
-            border-radius: 18px;
-            padding: 14px;
-            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+            border: 3px solid #3498db;
+            border-radius: 16px;
+            padding: 12px 14px;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
+            flex-shrink: 0;
         }
 
         .my-badge-tag {
@@ -285,34 +303,36 @@
             font-size: 12px;
             padding: 2px 8px;
             border-radius: 8px;
+            flex-shrink: 0;
         }
 
         .my-money-box {
             background: linear-gradient(135deg, #fff9db 0%, #fdebd0 100%);
-            border: 2.5px solid #f39c12;
-            border-radius: 14px;
-            padding: 10px 12px;
+            border: 2px solid #f39c12;
+            border-radius: 12px;
+            padding: 8px 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .my-money-value {
-            font-size: 23px;
+            font-size: 24px;
             color: #c0392b;
         }
 
         /* 주사위 굴리기 영역 */
         .dice-panel {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.96);
             border: 3px solid #e67e22;
-            border-radius: 18px;
-            padding: 14px;
-            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            padding: 12px 14px;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 9px;
+            flex-shrink: 0;
         }
 
         .dice-panel-title {
@@ -320,7 +340,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 16px;
+            font-size: 17px;
             color: #d35400;
         }
 
@@ -328,17 +348,17 @@
             width: 100%;
             background: #fef5e7;
             border: 2px dashed #f5b041;
-            border-radius: 14px;
-            padding: 12px;
+            border-radius: 12px;
+            padding: 11px;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 18px;
+            gap: 20px;
         }
 
         .die-box {
-            width: 56px;
-            height: 56px;
+            width: 62px;
+            height: 62px;
             background: #ffffff;
             border: 3px solid #2c3e50;
             border-radius: 14px;
@@ -346,7 +366,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
+            font-size: 31px;
             color: #2c3e50;
         }
 
@@ -355,12 +375,12 @@
             background: linear-gradient(180deg, #ff7675 0%, #e74c3c 100%);
             color: #ffffff;
             border: none;
-            border-radius: 14px;
-            padding: 12px;
+            border-radius: 13px;
+            padding: 11px;
             font-family: 'Jua', sans-serif;
             font-size: 20px;
             cursor: pointer;
-            box-shadow: 0 5px 0 #c0392b;
+            box-shadow: 0 4px 0 #c0392b;
             transition: transform 0.1s;
         }
 
@@ -369,7 +389,7 @@
         }
 
         .roll-dice-btn:active {
-            transform: translateY(4px);
+            transform: translateY(3px);
             box-shadow: 0 1px 0 #c0392b;
         }
 
@@ -382,12 +402,12 @@
         /* 내 증강 카드 보관함 영역 */
         .my-augments-panel {
             flex: 1;
-            min-height: 170px;
-            background: rgba(255, 255, 255, 0.95);
+            min-height: 150px;
+            background: rgba(255, 255, 255, 0.96);
             border: 3px solid #9b59b6;
-            border-radius: 18px;
+            border-radius: 16px;
             padding: 12px 14px;
-            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -398,26 +418,27 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 16px;
+            font-size: 17px;
             color: #6c3483;
+            flex-shrink: 0;
         }
 
         .aug-cards-list {
             flex: 1;
+            min-height: 0;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 8px;
-            padding-right: 2px;
         }
 
         .my-aug-card {
             border-radius: 12px;
-            padding: 9px 11px;
+            padding: 10px 12px;
             display: flex;
             flex-direction: column;
-            gap: 3px;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+            gap: 4px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
         }
 
         .my-aug-card.silver {
@@ -442,22 +463,22 @@
         }
 
         .my-aug-name {
-            font-size: 15px;
+            font-size: 16px;
             color: #2c3e50;
         }
 
         .my-aug-tier-tag {
-            font-size: 11px;
-            padding: 1px 7px;
+            font-size: 12px;
+            padding: 2px 8px;
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.88);
             color: #34495e;
         }
 
         .my-aug-desc {
-            font-size: 12.5px;
+            font-size: 13px;
             color: #4d5656;
-            line-height: 1.3;
+            line-height: 1.35;
         }
     </style>
 </head>
@@ -477,7 +498,7 @@
         </aside>
 
         <!-- 중앙: 9x9 카오스 마블 보드판 -->
-        <section class="board-center-stage">
+        <section class="board-center-stage" id="board-center-stage">
             <div id="phaser-game-container"></div>
         </section>
 
@@ -544,7 +565,6 @@
 
         document.getElementById('hud-room-code').innerText = `ROOM: ${roomCode}`;
 
-        // 초기 플레이어 상태 구성 (로비에서 넘어온 인원이 없으면 4인 UI 확인용 샘플 구성)
         function createInitialGamePlayers(rawPlayers) {
             const baseList = rawPlayers.length > 0
                 ? rawPlayers
@@ -561,7 +581,6 @@
                 order: idx + 1,
                 colorHex: PLAYER_COLORS[idx % PLAYER_COLORS.length].hex,
                 money: 300,
-                // UI 배치 확인용 초기 증강 샘플 (추후 실제 증강 획득 이벤트와 연동)
                 augments: idx === 0
                     ? [
                         { tier: 'gold', name: '황금 주사위', desc: '더블이 나올 때마다 보너스 +30만 원을 획득합니다.' },
@@ -582,7 +601,6 @@
             const me = players.find((p) => p.name === myNickname) || players[0];
             const opponents = players.filter((p) => p !== me).slice(0, 3);
 
-            // 1. 우측 나의 영역 업데이트
             const myBadge = document.getElementById('my-pawn-badge');
             myBadge.style.background = me.colorHex;
             myBadge.innerText = me.order;
@@ -592,7 +610,6 @@
             document.getElementById('my-order-display').innerText = `${me.order}순서`;
             document.getElementById('my-money-display').innerText = `${me.money.toLocaleString()}만`;
 
-            // 2. 우측 내 증강 카드 보관함 업데이트 (상세 내용 공개)
             const myAugListEl = document.getElementById('my-augments-list');
             document.getElementById('my-aug-count').innerText = `${me.augments.length}장`;
 
@@ -610,7 +627,6 @@
                 `).join('');
             }
 
-            // 3. 좌측 상대 플레이어 영역 업데이트 (최대 3개, 증강은 등급 색만 표시)
             const oppContainer = document.getElementById('opponents-container');
             const cardsHtml = opponents.map((opp) => {
                 const isTurn = opp.order === currentTurnOrder;
@@ -643,7 +659,9 @@
 
             oppContainer.innerHTML = `
                 <div class="panel-section-title">상대 플레이어 (${opponents.length}명)</div>
-                ${cardsHtml || '<div class="opponent-card"><span class="empty-aug-hint">참여한 다른 플레이어가 없습니다.</span></div>'}
+                <div class="opponents-cards-wrap">
+                    ${cardsHtml || '<div class="opponent-card"><span class="empty-aug-hint">참여한 다른 플레이어가 없습니다.</span></div>'}
+                </div>
             `;
         }
 
@@ -1138,36 +1156,36 @@
 
             create() {
                 const size = this.scale.width;
-                const padding = 16;
+                const padding = 12;
                 const boardSize = size - padding * 2;
                 const cellSize = boardSize / 9;
 
                 // 외곽 프레임
                 const bg = this.add.graphics();
                 bg.fillStyle(0xfffaf0, 1);
-                bg.fillRoundedRect(padding - 8, padding - 8, boardSize + 16, boardSize + 16, 18);
-                bg.lineStyle(4, 0xf39c12, 1);
-                bg.strokeRoundedRect(padding - 8, padding - 8, boardSize + 16, boardSize + 16, 18);
+                bg.fillRoundedRect(padding - 6, padding - 6, boardSize + 12, boardSize + 12, 16);
+                bg.lineStyle(3.5, 0xf39c12, 1);
+                bg.strokeRoundedRect(padding - 6, padding - 6, boardSize + 12, boardSize + 12, 16);
 
-                // 중앙 7x7 영역
+                // 중앙 7x7 영역 (빈 공간 최소화를 위해 여백 축소)
                 const innerX = padding + cellSize;
                 const innerY = padding + cellSize;
                 const innerSize = cellSize * 7;
                 const centerBg = this.add.graphics();
-                centerBg.fillStyle(0xe8f8f5, 0.92);
-                centerBg.fillRoundedRect(innerX + 4, innerY + 4, innerSize - 8, innerSize - 8, 14);
+                centerBg.fillStyle(0xe8f8f5, 0.94);
+                centerBg.fillRoundedRect(innerX + 2, innerY + 2, innerSize - 4, innerSize - 4, 12);
                 centerBg.lineStyle(2, 0xa3e4d7, 1);
-                centerBg.strokeRoundedRect(innerX + 4, innerY + 4, innerSize - 8, innerSize - 8, 14);
+                centerBg.strokeRoundedRect(innerX + 2, innerY + 2, innerSize - 4, innerSize - 4, 12);
 
                 this.add.text(size / 2, size / 2 - 16, 'CHAOS MARBLE', {
                     fontFamily: 'Jua',
-                    fontSize: '34px',
+                    fontSize: '36px',
                     color: '#16a085'
                 }).setOrigin(0.5);
 
                 this.add.text(size / 2, size / 2 + 18, '도파민 폭발 파티 보드게임', {
                     fontFamily: 'Jua',
-                    fontSize: '17px',
+                    fontSize: '18px',
                     color: '#566573'
                 }).setOrigin(0.5);
 
@@ -1182,7 +1200,7 @@
                     };
                 };
 
-                const iconScale = Math.max(0.95, cellSize / 64);
+                const iconScale = Math.max(1.0, cellSize / 62);
                 const tiles = buildOuterTiles32();
 
                 tiles.forEach((tile) => {
@@ -1198,9 +1216,9 @@
 
                     const g = this.add.graphics();
                     g.fillStyle(tile.color, 1);
-                    g.fillRoundedRect(pos.left + 2, pos.top + 2, cellSize - 4, cellSize - 4, isCorner ? 10 : 6);
-                    g.lineStyle(isCorner ? 3.5 : isProperty ? 2.4 : 1.8, tile.border, 1);
-                    g.strokeRoundedRect(pos.left + 2, pos.top + 2, cellSize - 4, cellSize - 4, isCorner ? 10 : 6);
+                    g.fillRoundedRect(pos.left + 1.5, pos.top + 1.5, cellSize - 3, cellSize - 3, isCorner ? 9 : 6);
+                    g.lineStyle(isCorner ? 3.2 : isProperty ? 2.2 : 1.6, tile.border, 1);
+                    g.strokeRoundedRect(pos.left + 1.5, pos.top + 1.5, cellSize - 3, cellSize - 3, isCorner ? 9 : 6);
 
                     if (isCorner) {
                         if (tile.cornerKey === 'start') {
@@ -1254,18 +1272,33 @@
             }
         }
 
-        // 좌우 패널 너비(270 + 300)와 여백을 제외한 중앙 영역에 맞춰 보드 크기 자동 계산
-        const horizontalSpace = window.innerWidth - 270 - 300 - 84;
-        const verticalSpace = window.innerHeight - 92;
-        const canvasSize = Math.max(460, Math.min(horizontalSpace, verticalSpace, 760));
+        // 좌측(296px) 및 우측(328px) 패널 영역을 절대 침범하지 않도록 중앙 스테이지 실측 크기로 보드 크기 결정
+        function computeSafeBoardSize() {
+            const stageEl = document.getElementById('board-center-stage');
+            const rect = stageEl ? stageEl.getBoundingClientRect() : null;
+            const stageW = rect && rect.width > 0 ? rect.width : (window.innerWidth - 296 - 328 - 44);
+            const stageH = rect && rect.height > 0 ? rect.height : (window.innerHeight - 52 - 20);
+            const borderAllowance = 14; // 컨테이너 테두리 및 그림자 여백
+            return Math.max(420, Math.floor(Math.min(stageW, stageH) - borderAllowance));
+        }
 
-        new Phaser.Game({
+        const canvasSize = computeSafeBoardSize();
+
+        const phaserGame = new Phaser.Game({
             type: Phaser.AUTO,
             width: canvasSize,
             height: canvasSize,
             parent: 'phaser-game-container',
             backgroundColor: '#f2ffc2',
             scene: [ChaosBoardScene]
+        });
+
+        window.addEventListener('resize', () => {
+            const nextSize = computeSafeBoardSize();
+            if (phaserGame && phaserGame.scale && Math.abs(phaserGame.scale.width - nextSize) >= 4) {
+                phaserGame.scale.resize(nextSize, nextSize);
+                phaserGame.scene.getScene('ChaosBoardScene').scene.restart();
+            }
         });
     </script>
 </body>
