@@ -171,24 +171,45 @@
             '0,3': { tier: 'prism',  label: '프리즘\n증강', color: 0xd7bde2, border: 0x8e44ad, textColor: '#4a235a' }
         };
 
+        // 남은 22칸: 각 나라 대표 도시 및 랜드마크 (시계방향 순서대로 배치)
+        const PROPERTY_TILES = {
+            // 1. 좌측 열 (0,1) ~ (0,6) 중 증강 (0,3) 제외 5칸
+            '0,1': { city: '방콕',       landmark: '왓아룬',     icon: 'wat_arun',     color: 0xfdebd0, border: 0xe67e22, price: 80 },
+            '0,2': { city: '하노이',     landmark: '하롱베이',   icon: 'halong_rock',  color: 0xd4efdf, border: 0x27ae60, price: 90 },
+            '0,4': { city: '마닐라',     landmark: '인트라무로스', icon: 'fort_arch',    color: 0xfdebd0, border: 0xe67e22, price: 100 },
+            '0,5': { city: '자카르타',   landmark: '모나스',     icon: 'monas_tower',  color: 0xfadbd8, border: 0xe74c3c, price: 110 },
+            '0,6': { city: '쿠알라',     landmark: '페트로나스', icon: 'twin_towers',  color: 0xd6eaf8, border: 0x2980b9, price: 120 },
+
+            // 2. 상단 행 (1,8) ~ (7,8) 중 증강 (4,8) 제외 6칸
+            '1,8': { city: '도쿄',       landmark: '도쿄타워',   icon: 'tokyo_tower',  color: 0xfadbd8, border: 0xe74c3c, price: 140 },
+            '2,8': { city: '베이징',     landmark: '자금성',     icon: 'palace_gate',  color: 0xf9e79f, border: 0xd4ac0d, price: 150 },
+            '3,8': { city: '타이베이',   landmark: '타이베이101', icon: 'taipei_101',   color: 0xd6eaf8, border: 0x2980b9, price: 160 },
+            '5,8': { city: '싱가포르',   landmark: '마리나베이', icon: 'marina_bay',   color: 0xd4efdf, border: 0x27ae60, price: 180 },
+            '6,8': { city: '홍콩',       landmark: '빅토리아피크', icon: 'peak_tower',   color: 0xe8daef, border: 0x8e44ad, price: 190 },
+            '7,8': { city: '시드니',     landmark: '오페라하우스', icon: 'opera_house',  color: 0xd6eaf8, border: 0x2980b9, price: 210 },
+
+            // 3. 우측 열 (8,7) ~ (8,1) 중 증강 (8,5), (8,3) 제외 5칸
+            '8,7': { city: '카이로',     landmark: '피라미드',   icon: 'pyramid',      color: 0xf9e79f, border: 0xd4ac0d, price: 220 },
+            '8,6': { city: '두바이',     landmark: '부르즈할리파', icon: 'burj_spire',   color: 0xfdebd0, border: 0xe67e22, price: 240 },
+            '8,4': { city: '이스탄불',   landmark: '블루모스크', icon: 'mosque_dome',  color: 0xd6eaf8, border: 0x2980b9, price: 250 },
+            '8,2': { city: '파리',       landmark: '에펠탑',     icon: 'eiffel_tower', color: 0xfadbd8, border: 0xe74c3c, price: 270 },
+            '8,1': { city: '로마',       landmark: '콜로세움',   icon: 'colosseum',    color: 0xfdebd0, border: 0xe67e22, price: 280 },
+
+            // 4. 하단 행 (7,0) ~ (1,0) 중 증강 (6,0) 제외 6칸
+            '7,0': { city: '런던',       landmark: '빅벤',       icon: 'big_ben',      color: 0xe8daef, border: 0x8e44ad, price: 300 },
+            '5,0': { city: '바르셀로나', landmark: '사그라다',   icon: 'sagrada',      color: 0xf9e79f, border: 0xd4ac0d, price: 310 },
+            '4,0': { city: '마드리드',   landmark: '왕궁',       icon: 'royal_palace', color: 0xfadbd8, border: 0xe74c3c, price: 320 },
+            '3,0': { city: '뉴욕',       landmark: '자유의여신', icon: 'liberty',      color: 0xd4efdf, border: 0x27ae60, price: 340 },
+            '2,0': { city: '리우',       landmark: '예수상',     icon: 'christ_statue',color: 0xd6eaf8, border: 0x2980b9, price: 350 },
+            '1,0': { city: '멕시코시티', landmark: '소칼로',     icon: 'aztec_step',   color: 0xd4efdf, border: 0x27ae60, price: 360 }
+        };
+
         function buildOuterTiles32() {
             const tiles = [];
-            // 1. 우측 열 아래->위: (0,0) ~ (0,8) [9칸]
-            for (let y = 0; y <= 8; y++) {
-                tiles.push({ index: tiles.length, x: 0, y });
-            }
-            // 2. 상단 행 우->좌: (1,8) ~ (8,8) [8칸]
-            for (let x = 1; x <= 8; x++) {
-                tiles.push({ index: tiles.length, x, y: 8 });
-            }
-            // 3. 좌측 열 위->아래: (8,7) ~ (8,0) [8칸]
-            for (let y = 7; y >= 0; y--) {
-                tiles.push({ index: tiles.length, x: 8, y });
-            }
-            // 4. 하단 행 좌->우: (7,0) ~ (1,0) [7칸] -> 총 32칸
-            for (let x = 7; x >= 1; x--) {
-                tiles.push({ index: tiles.length, x, y: 0 });
-            }
+            for (let y = 0; y <= 8; y++) tiles.push({ index: tiles.length, x: 0, y });
+            for (let x = 1; x <= 8; x++) tiles.push({ index: tiles.length, x, y: 8 });
+            for (let y = 7; y >= 0; y--) tiles.push({ index: tiles.length, x: 8, y });
+            for (let x = 7; x >= 1; x--) tiles.push({ index: tiles.length, x, y: 0 });
 
             return tiles.map((tile) => {
                 if (tile.x === 0 && tile.y === 0) return { ...tile, type: 'corner', ...CORNERS.START };
@@ -196,28 +217,212 @@
                 if (tile.x === 8 && tile.y === 8) return { ...tile, type: 'corner', ...CORNERS.ROULETTE };
                 if (tile.x === 8 && tile.y === 0) return { ...tile, type: 'corner', ...CORNERS.JAIL };
 
-                const aug = AUGMENT_TILES[`${tile.x},${tile.y}`];
+                const key = `${tile.x},${tile.y}`;
+                const aug = AUGMENT_TILES[key];
                 if (aug) {
-                    return {
-                        ...tile,
-                        type: 'augment',
-                        tier: aug.tier,
-                        label: aug.label,
-                        color: aug.color,
-                        border: aug.border,
-                        textColor: aug.textColor
-                    };
+                    return { ...tile, type: 'augment', ...aug };
+                }
+
+                const prop = PROPERTY_TILES[key];
+                if (prop) {
+                    return { ...tile, type: 'property', ...prop, owner: null, level: 0 };
                 }
 
                 return {
                     ...tile,
                     type: 'normal',
-                    label: `(${tile.x},${tile.y})`,
+                    label: key,
                     color: 0xfef9e7,
                     border: 0xd4ac0d,
                     textColor: '#7f8c8d'
                 };
             });
+        }
+
+        // 2D 도형 조합으로 각 랜드마크 실루엣 렌더링
+        function drawLandmarkGraphic(scene, iconKey, cx, cy, scale = 1) {
+            const g = scene.add.graphics();
+            const s = (v) => v * scale;
+
+            switch (iconKey) {
+                case 'eiffel_tower':
+                    g.lineStyle(2.2 * scale, 0x8e44ad, 1);
+                    g.fillStyle(0xd35400, 1);
+                    g.fillTriangle(cx, cy - s(13), cx - s(8), cy + s(9), cx + s(8), cy + s(9));
+                    g.fillStyle(0xfef9e7, 1);
+                    g.fillTriangle(cx, cy - s(4), cx - s(3.5), cy + s(9), cx + s(3.5), cy + s(9));
+                    g.lineStyle(2 * scale, 0x922b21, 1);
+                    g.lineBetween(cx - s(5.5), cy + s(1), cx + s(5.5), cy + s(1));
+                    g.lineBetween(cx - s(7), cy + s(5), cx + s(7), cy + s(5));
+                    break;
+
+                case 'tokyo_tower':
+                    g.fillStyle(0xe74c3c, 1);
+                    g.fillTriangle(cx, cy - s(14), cx - s(8), cy + s(9), cx + s(8), cy + s(9));
+                    g.fillStyle(0xffffff, 1);
+                    g.fillRect(cx - s(5), cy - s(5), s(10), s(2.5));
+                    g.fillRect(cx - s(6.5), cy + s(2), s(13), s(2.5));
+                    break;
+
+                case 'liberty':
+                    g.fillStyle(0x16a085, 1);
+                    g.fillRect(cx - s(6), cy + s(3), s(12), s(6));
+                    g.fillRect(cx - s(3.5), cy - s(6), s(7), s(9));
+                    g.fillCircle(cx, cy - s(8.5), s(3));
+                    g.lineStyle(2 * scale, 0xf39c12, 1);
+                    g.lineBetween(cx + s(3.5), cy - s(5), cx + s(6.5), cy - s(11));
+                    g.fillStyle(0xf1c40f, 1);
+                    g.fillCircle(cx + s(6.5), cy - s(12), s(2.2));
+                    break;
+
+                case 'big_ben':
+                    g.fillStyle(0xb7950b, 1);
+                    g.fillRect(cx - s(4.5), cy - s(6), s(9), s(15));
+                    g.fillTriangle(cx, cy - s(14), cx - s(5.5), cy - s(6), cx + s(5.5), cy - s(6));
+                    g.fillStyle(0xffffff, 1);
+                    g.fillCircle(cx, cy - s(2.5), s(2.5));
+                    break;
+
+                case 'colosseum':
+                    g.fillStyle(0xd68910, 1);
+                    g.fillRoundedRect(cx - s(9), cy - s(6), s(18), s(15), s(3));
+                    g.fillStyle(0x5d4037, 1);
+                    g.fillRect(cx - s(6), cy - s(2), s(2.5), s(5));
+                    g.fillRect(cx - s(1.2), cy - s(2), s(2.5), s(5));
+                    g.fillRect(cx + s(3.5), cy - s(2), s(2.5), s(5));
+                    break;
+
+                case 'pyramid':
+                    g.fillStyle(0xf4d03f, 1);
+                    g.fillTriangle(cx - s(1), cy - s(11), cx - s(11), cy + s(9), cx + s(4), cy + s(9));
+                    g.fillStyle(0xd4ac0d, 1);
+                    g.fillTriangle(cx - s(1), cy - s(11), cx + s(4), cy + s(9), cx + s(11), cy + s(9));
+                    break;
+
+                case 'burj_spire':
+                    g.fillStyle(0x5dade2, 1);
+                    g.fillTriangle(cx, cy - s(15), cx - s(5.5), cy + s(9), cx + s(5.5), cy + s(9));
+                    g.lineStyle(1.8 * scale, 0x1b4f72, 1);
+                    g.lineBetween(cx, cy - s(15), cx, cy + s(9));
+                    break;
+
+                case 'mosque_dome':
+                    g.fillStyle(0x2980b9, 1);
+                    g.fillCircle(cx, cy - s(2), s(7));
+                    g.fillRect(cx - s(8), cy - s(2), s(16), s(11));
+                    g.fillRect(cx - s(10.5), cy - s(9), s(2.5), s(18));
+                    g.fillRect(cx + s(8), cy - s(9), s(2.5), s(18));
+                    break;
+
+                case 'opera_house':
+                    g.fillStyle(0xffffff, 1);
+                    g.fillTriangle(cx - s(9), cy + s(7), cx - s(3), cy - s(9), cx + s(1), cy + s(7));
+                    g.fillTriangle(cx - s(2), cy + s(7), cx + s(4), cy - s(6), cx + s(9), cy + s(7));
+                    g.lineStyle(1.6 * scale, 0x2980b9, 1);
+                    g.strokeTriangle(cx - s(9), cy + s(7), cx - s(3), cy - s(9), cx + s(1), cy + s(7));
+                    g.strokeTriangle(cx - s(2), cy + s(7), cx + s(4), cy - s(6), cx + s(9), cy + s(7));
+                    break;
+
+                case 'twin_towers':
+                    g.fillStyle(0x5499c7, 1);
+                    g.fillRect(cx - s(7.5), cy - s(9), s(5), s(18));
+                    g.fillRect(cx + s(2.5), cy - s(9), s(5), s(18));
+                    g.lineStyle(2 * scale, 0x1f618d, 1);
+                    g.lineBetween(cx - s(2.5), cy - s(1), cx + s(2.5), cy - s(1));
+                    break;
+
+                case 'taipei_101':
+                    g.fillStyle(0x2e86c1, 1);
+                    g.fillRect(cx - s(4.5), cy - s(12), s(9), s(21));
+                    g.lineStyle(1.6 * scale, 0xa9cce3, 1);
+                    g.lineBetween(cx - s(4.5), cy - s(5), cx + s(4.5), cy - s(5));
+                    g.lineBetween(cx - s(4.5), cy + s(2), cx + s(4.5), cy + s(2));
+                    break;
+
+                case 'marina_bay':
+                    g.fillStyle(0x566573, 1);
+                    g.fillRect(cx - s(7), cy - s(4), s(3), s(13));
+                    g.fillRect(cx - s(1.5), cy - s(4), s(3), s(13));
+                    g.fillRect(cx + s(4), cy - s(4), s(3), s(13));
+                    g.fillStyle(0x27ae60, 1);
+                    g.fillRoundedRect(cx - s(10), cy - s(8), s(20), s(4), s(2));
+                    break;
+
+                case 'palace_gate':
+                    g.fillStyle(0xc0392b, 1);
+                    g.fillRect(cx - s(8), cy - s(3), s(16), s(12));
+                    g.fillStyle(0xf1c40f, 1);
+                    g.fillTriangle(cx, cy - s(11), cx - s(10), cy - s(3), cx + s(10), cy - s(3));
+                    g.fillStyle(0x2c3e50, 1);
+                    g.fillRect(cx - s(2.5), cy + s(3), s(5), s(6));
+                    break;
+
+                case 'sagrada':
+                    g.fillStyle(0xd35400, 1);
+                    g.fillTriangle(cx - s(6), cy - s(12), cx - s(9), cy + s(9), cx - s(3), cy + s(9));
+                    g.fillTriangle(cx + s(6), cy - s(12), cx + s(3), cy + s(9), cx + s(9), cy + s(9));
+                    g.fillRect(cx - s(3), cy - s(5), s(6), s(14));
+                    break;
+
+                case 'royal_palace':
+                    g.fillStyle(0xf5cba7, 1);
+                    g.fillRect(cx - s(9), cy - s(4), s(18), s(13));
+                    g.fillStyle(0xc0392b, 1);
+                    g.fillTriangle(cx, cy - s(11), cx - s(6), cy - s(4), cx + s(6), cy - s(4));
+                    break;
+
+                case 'christ_statue':
+                    g.fillStyle(0xecf0f1, 1);
+                    g.fillRect(cx - s(2.5), cy - s(7), s(5), s(16));
+                    g.lineStyle(3 * scale, 0xecf0f1, 1);
+                    g.lineBetween(cx - s(9.5), cy - s(4), cx + s(9.5), cy - s(4));
+                    g.fillCircle(cx, cy - s(9.5), s(2.5));
+                    break;
+
+                case 'aztec_step':
+                    g.fillStyle(0x27ae60, 1);
+                    g.fillRect(cx - s(10), cy + s(4), s(20), s(5));
+                    g.fillRect(cx - s(7.5), cy - s(1), s(15), s(5));
+                    g.fillRect(cx - s(5), cy - s(6), s(10), s(5));
+                    g.fillRect(cx - s(2.5), cy - s(10), s(5), s(4));
+                    break;
+
+                case 'wat_arun':
+                    g.fillStyle(0xf8c471, 1);
+                    g.fillTriangle(cx, cy - s(14), cx - s(7.5), cy + s(9), cx + s(7.5), cy + s(9));
+                    g.fillStyle(0xe67e22, 1);
+                    g.fillCircle(cx, cy - s(2), s(3));
+                    break;
+
+                case 'halong_rock':
+                    g.fillStyle(0x1e8449, 1);
+                    g.fillTriangle(cx - s(6), cy - s(10), cx - s(10), cy + s(9), cx - s(1), cy + s(9));
+                    g.fillTriangle(cx + s(5), cy - s(7), cx + s(1), cy + s(9), cx + s(10), cy + s(9));
+                    break;
+
+                case 'fort_arch':
+                    g.fillStyle(0xca6f1e, 1);
+                    g.fillRect(cx - s(8.5), cy - s(6), s(17), s(15));
+                    g.fillStyle(0xfdebd0, 1);
+                    g.fillCircle(cx, cy + s(3), s(4));
+                    g.fillRect(cx - s(4), cy + s(3), s(8), s(6));
+                    break;
+
+                case 'monas_tower':
+                    g.fillStyle(0xbdc3c7, 1);
+                    g.fillRect(cx - s(3), cy - s(8), s(6), s(17));
+                    g.fillStyle(0xf1c40f, 1);
+                    g.fillCircle(cx, cy - s(10.5), s(3));
+                    break;
+
+                case 'peak_tower':
+                default:
+                    g.fillStyle(0x8e44ad, 1);
+                    g.fillTriangle(cx, cy - s(13), cx - s(8), cy + s(9), cx + s(8), cy + s(9));
+                    g.fillStyle(0xf5eef8, 1);
+                    g.fillCircle(cx, cy - s(1), s(3));
+                    break;
+            }
         }
 
         class ChaosBoardScene extends Phaser.Scene {
@@ -227,7 +432,7 @@
 
             create() {
                 const size = this.scale.width;
-                const padding = 20;
+                const padding = 18;
                 const boardSize = size - padding * 2;
                 const cellSize = boardSize / 9;
 
@@ -248,15 +453,15 @@
                 centerBg.lineStyle(2, 0xa3e4d7, 1);
                 centerBg.strokeRoundedRect(innerX + 4, innerY + 4, innerSize - 8, innerSize - 8, 14);
 
-                this.add.text(size / 2, size / 2 - 14, 'CHAOS MARBLE', {
+                this.add.text(size / 2, size / 2 - 18, 'CHAOS MARBLE', {
                     fontFamily: 'Jua',
                     fontSize: '34px',
                     color: '#16a085'
                 }).setOrigin(0.5);
 
-                this.add.text(size / 2, size / 2 + 20, '실버 3 · 골드 2 · 프리즘 1 증강 배치 완료', {
+                this.add.text(size / 2, size / 2 + 16, '외곽 32타일 완성 (거점 4 · 증강 6 · 도시 22)', {
                     fontFamily: 'Jua',
-                    fontSize: '18px',
+                    fontSize: '17px',
                     color: '#566573'
                 }).setOrigin(0.5);
 
@@ -271,16 +476,19 @@
                     };
                 };
 
+                const iconScale = Math.max(0.75, cellSize / 82);
                 const tiles = buildOuterTiles32();
+
                 tiles.forEach((tile) => {
                     const pos = toPixel(tile.x, tile.y);
                     const g = this.add.graphics();
                     const isCorner = tile.type === 'corner';
                     const isAugment = tile.type === 'augment';
+                    const isProperty = tile.type === 'property';
 
                     g.fillStyle(tile.color, 1);
                     g.fillRoundedRect(pos.left + 2, pos.top + 2, cellSize - 4, cellSize - 4, isCorner ? 10 : 6);
-                    g.lineStyle(isCorner ? 3.5 : isAugment ? 2.6 : 1.8, tile.border, 1);
+                    g.lineStyle(isCorner ? 3.5 : (isAugment || isProperty) ? 2.4 : 1.8, tile.border, 1);
                     g.strokeRoundedRect(pos.left + 2, pos.top + 2, cellSize - 4, cellSize - 4, isCorner ? 10 : 6);
 
                     if (isCorner) {
@@ -312,6 +520,23 @@
                             fontSize: '11px',
                             color: tile.textColor
                         }).setOrigin(0.5);
+                    } else if (isProperty) {
+                        // 상단 도시명
+                        this.add.text(pos.centerX, pos.top + 12, tile.city, {
+                            fontFamily: 'Jua',
+                            fontSize: '12px',
+                            color: '#2c3e50'
+                        }).setOrigin(0.5);
+
+                        // 중앙 2D 랜드마크 실루엣
+                        drawLandmarkGraphic(this, tile.icon, pos.centerX, pos.centerY + 3, iconScale);
+
+                        // 하단 랜드마크명
+                        this.add.text(pos.centerX, pos.top + cellSize - 11, tile.landmark, {
+                            fontFamily: 'Jua',
+                            fontSize: '10px',
+                            color: '#34495e'
+                        }).setOrigin(0.5);
                     } else {
                         this.add.text(pos.centerX, pos.centerY, `(${tile.x},${tile.y})`, {
                             fontFamily: 'Jua',
@@ -323,8 +548,8 @@
             }
         }
 
-        const availableSize = Math.min(window.innerWidth - 40, window.innerHeight - 104, 760);
-        const canvasSize = Math.max(460, availableSize);
+        const availableSize = Math.min(window.innerWidth - 40, window.innerHeight - 104, 780);
+        const canvasSize = Math.max(480, availableSize);
 
         new Phaser.Game({
             type: Phaser.AUTO,
