@@ -162,6 +162,15 @@
             JAIL:     { x: 8, y: 0, label: '감옥',       color: 0xe74c3c, border: 0x922b21 }
         };
 
+        const AUGMENT_TILES = {
+            '6,0': { tier: 'silver', label: '실버\n증강', color: 0xd5dbdb, border: 0x7f8c8d, textColor: '#2c3e50' },
+            '8,3': { tier: 'silver', label: '실버\n증강', color: 0xd5dbdb, border: 0x7f8c8d, textColor: '#2c3e50' },
+            '0,7': { tier: 'silver', label: '실버\n증강', color: 0xd5dbdb, border: 0x7f8c8d, textColor: '#2c3e50' },
+            '8,5': { tier: 'gold',   label: '골드\n증강', color: 0xf9e79f, border: 0xd4ac0d, textColor: '#7d6608' },
+            '4,8': { tier: 'gold',   label: '골드\n증강', color: 0xf9e79f, border: 0xd4ac0d, textColor: '#7d6608' },
+            '0,3': { tier: 'prism',  label: '프리즘\n증강', color: 0xd7bde2, border: 0x8e44ad, textColor: '#4a235a' }
+        };
+
         function buildOuterTiles32() {
             const tiles = [];
             // 1. 우측 열 아래->위: (0,0) ~ (0,8) [9칸]
@@ -186,12 +195,27 @@
                 if (tile.x === 0 && tile.y === 8) return { ...tile, type: 'corner', ...CORNERS.DOOR };
                 if (tile.x === 8 && tile.y === 8) return { ...tile, type: 'corner', ...CORNERS.ROULETTE };
                 if (tile.x === 8 && tile.y === 0) return { ...tile, type: 'corner', ...CORNERS.JAIL };
+
+                const aug = AUGMENT_TILES[`${tile.x},${tile.y}`];
+                if (aug) {
+                    return {
+                        ...tile,
+                        type: 'augment',
+                        tier: aug.tier,
+                        label: aug.label,
+                        color: aug.color,
+                        border: aug.border,
+                        textColor: aug.textColor
+                    };
+                }
+
                 return {
                     ...tile,
                     type: 'normal',
                     label: `(${tile.x},${tile.y})`,
                     color: 0xfef9e7,
-                    border: 0xd4ac0d
+                    border: 0xd4ac0d,
+                    textColor: '#7f8c8d'
                 };
             });
         }
@@ -230,15 +254,12 @@
                     color: '#16a085'
                 }).setOrigin(0.5);
 
-                this.add.text(size / 2, size / 2 + 20, '9x9 외곽 32타일 · (0,0) 출발 시계방향', {
+                this.add.text(size / 2, size / 2 + 20, '실버 3 · 골드 2 · 프리즘 1 증강 배치 완료', {
                     fontFamily: 'Jua',
                     fontSize: '18px',
                     color: '#566573'
                 }).setOrigin(0.5);
 
-                // (x,y) -> 캔버스 좌표 변환
-                // x=0이 오른쪽이므로 col = 8 - x
-                // y=0이 아래쪽이므로 row = 8 - y
                 const toPixel = (x, y) => {
                     const col = 8 - x;
                     const row = 8 - y;
@@ -255,10 +276,11 @@
                     const pos = toPixel(tile.x, tile.y);
                     const g = this.add.graphics();
                     const isCorner = tile.type === 'corner';
+                    const isAugment = tile.type === 'augment';
 
                     g.fillStyle(tile.color, 1);
                     g.fillRoundedRect(pos.left + 2, pos.top + 2, cellSize - 4, cellSize - 4, isCorner ? 10 : 6);
-                    g.lineStyle(isCorner ? 3.5 : 1.8, tile.border, 1);
+                    g.lineStyle(isCorner ? 3.5 : isAugment ? 2.6 : 1.8, tile.border, 1);
                     g.strokeRoundedRect(pos.left + 2, pos.top + 2, cellSize - 4, cellSize - 4, isCorner ? 10 : 6);
 
                     if (isCorner) {
@@ -276,11 +298,25 @@
                             fontSize: '12px',
                             color: '#ffffff'
                         }).setOrigin(0.5);
+                    } else if (isAugment) {
+                        this.add.text(pos.centerX, pos.centerY - 9, tile.label, {
+                            fontFamily: 'Jua',
+                            fontSize: '13px',
+                            color: tile.textColor,
+                            align: 'center',
+                            lineHeight: 14
+                        }).setOrigin(0.5);
+
+                        this.add.text(pos.centerX, pos.centerY + 18, `(${tile.x},${tile.y})`, {
+                            fontFamily: 'Jua',
+                            fontSize: '11px',
+                            color: tile.textColor
+                        }).setOrigin(0.5);
                     } else {
                         this.add.text(pos.centerX, pos.centerY, `(${tile.x},${tile.y})`, {
                             fontFamily: 'Jua',
                             fontSize: '12px',
-                            color: '#7f8c8d'
+                            color: tile.textColor
                         }).setOrigin(0.5);
                     }
                 });
